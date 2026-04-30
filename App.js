@@ -12,6 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const propertiesSectionTitle = document.getElementById('properties-section-title');
     const btnBackFeatured = document.getElementById('btn-back-featured');
 
+    // Filtros avanzados
+    const filterLocation = document.getElementById('filter-location');
+    const filterType = document.getElementById('filter-type');
+    const filterPriceMin = document.getElementById('filter-price');
+    const filterPriceMax = document.getElementById('filter-price-max');
+    const btnApplyFilters = document.getElementById('btn-apply-filters');
+
     // Botones de filtro
     const btnBuy = document.getElementById('btn-buy');
     const btnRent = document.getElementById('btn-rent');
@@ -262,6 +269,38 @@ document.addEventListener('DOMContentLoaded', () => {
     navRent?.addEventListener('click', (e) => { e.preventDefault(); showSection('rent'); });
     navExplore?.addEventListener('click', (e) => { e.preventDefault(); showSection('explore'); });
     btnBackFeatured?.addEventListener('click', showFeaturedSection);
+
+    // Lógica de Filtros Avanzados
+    btnApplyFilters?.addEventListener('click', () => {
+        const loc = filterLocation?.value.toLowerCase();
+        const type = filterType?.value.toLowerCase();
+        const minPrice = parseFloat(filterPriceMin?.value) || 0;
+        const maxPrice = parseFloat(filterPriceMax?.value) || Infinity;
+
+        // Ocultar sección destacada y mostrar cuadrícula de todas las propiedades
+        featuredSection.style.display = 'none';
+        allPropertiesSection.classList.remove('hidden');
+        propertiesSectionTitle.textContent = "RESULTADOS DE BÚSQUEDA";
+        [btnBuy, btnRent, btnExplore].forEach(btn => btn?.classList.remove('active'));
+
+        const filtered = allProperties.filter(prop => {
+            const propLoc = (prop.location || '').toLowerCase();
+            const propType = (prop.type || '').toLowerCase();
+            // Extraer el precio numérico (ej. "$4,200,000" -> 4200000)
+            const propPrice = parseFloat((prop.price || '').replace(/[^0-9.]/g, '')) || 0;
+
+            if (loc && !propLoc.includes(loc)) return false;
+            if (type && !propType.includes(type)) return false;
+            if (propPrice < minPrice || propPrice > maxPrice) return false;
+            
+            return true;
+        });
+
+        renderFullProperties(filtered);
+        
+        // Hacer scroll a la sección de resultados
+        allPropertiesSection.scrollIntoView({ behavior: 'smooth' });
+    });
 
     // ==========================================
     // MODAL DE DETALLES

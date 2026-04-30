@@ -49,6 +49,42 @@
                     <button class="btn-dark-search">BUSCAR</button>
                 </div>
 
+                <div class="advanced-filters">
+                    <select id="filter-location" class="filter-select">
+                        <option value="">Ubicación</option>
+                        <option value="Polanco">Polanco</option>
+                        <option value="Santa Fe">Santa Fe</option>
+                        <option value="Lomas">Lomas de Chapultepec</option>
+                        <option value="Condesa">Condesa</option>
+                    </select>
+                    
+                    <select id="filter-type" class="filter-select">
+                        <option value="">Tipo de Propiedad</option>
+                        <option value="casa">Casa</option>
+                        <option value="departamento">Departamento</option>
+                        <option value="penthouse">Penthouse</option>
+                        <option value="villa">Villa</option>
+                    </select>
+
+                    <select id="filter-price" class="filter-select">
+                        <option value="">Precio Mínimo</option>
+                        <option value="1000000">$1,000,000</option>
+                        <option value="5000000">$5,000,000</option>
+                        <option value="10000000">$10,000,000</option>
+                        <option value="20000000">$20,000,000</option>
+                    </select>
+
+                    <select id="filter-price-max" class="filter-select">
+                        <option value="">Precio Máximo</option>
+                        <option value="5000000">$5,000,000</option>
+                        <option value="10000000">$10,000,000</option>
+                        <option value="20000000">$20,000,000</option>
+                        <option value="50000000">$50,000,000+</option>
+                    </select>
+
+                    <button id="btn-apply-filters" class="btn-gold-search">FILTRAR</button>
+                </div>
+
                 <div class="filter-buttons">
                     <button class="filter-btn active" id="btn-buy">COMPRAR</button>
                     <button class="filter-btn" id="btn-rent">RENTAR</button>
