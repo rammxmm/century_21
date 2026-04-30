@@ -365,11 +365,22 @@
 
             const pass = document.getElementById('password').value;
             const confirm = document.getElementById('confirm-password').value;
+            const tipo = document.getElementById('tipo').value;
+            const nombre = document.getElementById('nombre').value;
+            const apellido = document.getElementById('apellido').value;
 
             if (pass !== confirm) {
                 alert('Las contraseñas no coinciden. Por favor verifica.');
                 return;
             }
+
+            // Simular creación de cuenta guardando en localStorage para que index.html lo reconozca
+            const user = {
+                nombre: `${nombre} ${apellido}`,
+                tipo: tipo,
+                avatar: `${nombre.charAt(0)}${apellido.charAt(0)}`.toUpperCase()
+            };
+            localStorage.setItem('c21_session', JSON.stringify(user));
 
             // Aquí iría la llamada al backend; por ahora redirige al inicio
             window.location.href = 'index.html';
