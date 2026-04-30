@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Cuenta - Estate Architect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Estilos específicos del registro — complementan styles.css */
+
+        /* Imagen de fondo diferente al login para variar */
+        .register-left {
+            background-image: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=2000&auto=format&fit=crop');
+        }
+
+        /* El lado derecho del registro necesita scroll por tener más campos */
+        .register-right {
+            overflow-y: auto;
+            align-items: flex-start;
+            padding: 4rem 3rem;
+        }
+
+        .register-form-container {
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
+        }
+
+        /* Fila de dos columnas para campos cortos (nombre / apellido) */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        /* Indicador de fortaleza de contraseña */
+        .password-strength {
+            display: flex;
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        .strength-bar {
+            flex: 1;
+            height: 3px;
+            background-color: var(--border-gray);
+            border-radius: 2px;
+            transition: background-color 0.3s ease;
+        }
+
+        .strength-bar.weak {
+            background-color: #e74c3c;
+        }
+
+        .strength-bar.medium {
+            background-color: #f39c12;
+        }
+
+        .strength-bar.strong {
+            background-color: #27ae60;
+        }
+
+        .strength-label {
+            font-size: 0.7rem;
+            color: #999;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Checkbox de términos y condiciones */
+        .form-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-check input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            min-width: 16px;
+            margin-top: 2px;
+            accent-color: var(--gold);
+            cursor: pointer;
+        }
+
+        .form-check label {
+            font-size: 0.8rem;
+            color: #666;
+            line-height: 1.5;
+            cursor: pointer;
+            letter-spacing: 0;
+            font-weight: 400;
+        }
+
+        .form-check label a {
+            color: var(--gold);
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        /* Separador de pasos (texto informativo sobre el formulario) */
+        .register-step-label {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Select de tipo de usuario */
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem 0;
+            border: none;
+            border-bottom: 1px solid var(--border-gray);
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            background: transparent;
+            color: var(--dark-gray);
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 4px center;
+            transition: border-color 0.3s;
+        }
+
+        .form-group select:focus {
+            border-bottom-color: var(--dark-gray);
+        }
+
+        /* Enlace de volver al login */
+        .back-to-login {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .back-to-login a {
+            color: var(--dark-gray);
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        /* Texto del lado izquierdo — versión registro */
+        .register-left-content h1 {
+            font-size: 3rem;
+        }
+
+        /* Ajustes responsive */
+        @media (max-width: 768px) {
+            .register-right {
+                padding: 3rem 1.5rem;
+                align-items: center;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body class="login-body">
+    <div class="login-container">
+
+        <!-- Lado Izquierdo: Imagen y Texto -->
+        <div class="login-left register-left">
+            <div class="login-left-content register-left-content">
+                <h1>Tu Próxima Gran Inversión Empieza Aquí.</h1>
+                <p>Únete a la red más exclusiva de compradores, vendedores y agentes de propiedades de lujo en el mundo.
+                    Acceso privado. Resultados extraordinarios.</p>
+                <div class="private-collection">
+                    <span class="line"></span> MEMBRESÍA EXCLUSIVA
+                </div>
+            </div>
+            <div class="login-footer">
+                &copy; 2026 CENTURY 21. TODOS LOS DERECHOS RESERVADOS.
+            </div>
+        </div>
+
+        <!-- Lado Derecho: Formulario de Registro -->
+        <div class="login-right register-right">
+            <div class="register-form-container">
+
+                <!-- Logo -->
+                <div class="login-logo">
+                    <h2>CENTURY 21</h2>
+                    <div class="logo-underline"></div>
+                </div>
+
+                <!-- Encabezado -->
+                <div class="login-header">
+                    <div class="register-step-label">NUEVA CUENTA</div>
+                    <h3>Crear Cuenta</h3>
+                    <p>Completa tus datos para acceder al portafolio global.</p>
+                </div>
+
+                <!-- Formulario -->
+                <form class="login-form" onsubmit="handleRegister(event)">
+
+                    <!-- Nombre y Apellido en fila -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nombre">NOMBRE</label>
+                            <input type="text" id="nombre" placeholder="Ana" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="apellido">APELLIDO</label>
+                            <input type="text" id="apellido" placeholder="García" required>
+                        </div>
+                    </div>
+
+                    <!-- Correo electrónico -->
+                    <div class="form-group">
+                        <label for="email">CORREO ELECTRÓNICO</label>
+                        <input type="email" id="email" placeholder="nombre@ejemplo.com" required>
+                    </div>
+
+                    <!-- Teléfono -->
+                    <div class="form-group">
+                        <label for="telefono">TELÉFONO</label>
+                        <input type="tel" id="telefono" placeholder="+52 (55) 0000-0000">
+                    </div>
+
+                    <!-- Tipo de usuario -->
+                    <div class="form-group">
+                        <label for="tipo">TIPO DE CUENTA</label>
+                        <select id="tipo" required>
+                            <option value="" disabled selected>Selecciona una opción</option>
+                            <option value="comprador">Comprador</option>
+                            <option value="vendedor">Vendedor / Propietario</option>
+                            <option value="agente">Agente Inmobiliario</option>
+                            <option value="inversionista">Inversionista</option>
+                        </select>
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div class="form-group">
+                        <label for="password">CONTRASEÑA</label>
+                        <input type="password" id="password" placeholder="Mínimo 8 caracteres" required
+                            oninput="checkStrength(this.value)">
+                        <!-- Barras de fortaleza -->
+                        <div class="password-strength">
+                            <div class="strength-bar" id="bar1"></div>
+                            <div class="strength-bar" id="bar2"></div>
+                            <div class="strength-bar" id="bar3"></div>
+                            <div class="strength-bar" id="bar4"></div>
+                        </div>
+                        <div class="strength-label" id="strength-label">Ingresa una contraseña</div>
+                    </div>
+
+                    <!-- Confirmar contraseña -->
+                    <div class="form-group">
+                        <label for="confirm-password">CONFIRMAR CONTRASEÑA</label>
+                        <input type="password" id="confirm-password" placeholder="Repite tu contraseña" required>
+                    </div>
+
+                    <!-- Términos y condiciones -->
+                    <div class="form-check">
+                        <input type="checkbox" id="terminos" required>
+                        <label for="terminos">
+                            Acepto los <a href="#">Términos de Servicio</a> y la
+                            <a href="#">Política de Privacidad</a> de Century 21.
+                        </label>
+                    </div>
+
+                    <!-- Botón de envío -->
+                    <button type="submit" class="btn-login">CREAR MI CUENTA</button>
+
+                </form>
+
+                <!-- Divisor -->
+                <div class="divider">
+                    <span>O REGISTRARSE CON</span>
+                </div>
+
+                <!-- Redes sociales -->
+                <div class="social-login">
+                    <button class="btn-social">
+                        <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                                fill="#4285F4" />
+                            <path
+                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                                fill="#34A853" />
+                            <path
+                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                                fill="#FBBC05" />
+                            <path
+                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                                fill="#EA4335" />
+                        </svg>
+                        GOOGLE
+                    </button>
+                    <button class="btn-social">
+                        <svg viewBox="0 0 384 512" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"
+                                fill="#000000" />
+                        </svg>
+                        APPLE
+                    </button>
+                </div>
+
+                <!-- Enlace al login -->
+                <div class="back-to-login">
+                    ¿Ya tienes una cuenta? <a href="login.html">Iniciar sesión</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ------------------------------------------------------------------
+           Indicador de fortaleza de contraseña
+           ------------------------------------------------------------------ */
+        function checkStrength(val) {
+            const bars = [document.getElementById('bar1'), document.getElementById('bar2'),
+            document.getElementById('bar3'), document.getElementById('bar4')];
+            const label = document.getElementById('strength-label');
+
+            // Reiniciar barras
+            bars.forEach(b => { b.className = 'strength-bar'; });
+
+            if (!val) {
+                label.textContent = 'Ingresa una contraseña';
+                return;
+            }
+
+            // Calcular puntaje
+            let score = 0;
+            if (val.length >= 8) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+
+            // Aplicar estilos según puntaje
+            const levels = ['weak', 'weak', 'medium', 'strong'];
+            const textos = ['Muy débil', 'Débil', 'Media', 'Fuerte'];
+            const clase = levels[score - 1] || 'weak';
+
+            for (let i = 0; i < score; i++) {
+                bars[i].classList.add(clase);
+            }
+
+            label.textContent = textos[score - 1] || 'Muy débil';
+        }
+
+        /* ------------------------------------------------------------------
+           Validación y envío del formulario
+           ------------------------------------------------------------------ */
+        function handleRegister(e) {
+            e.preventDefault();
+
+            const pass = document.getElementById('password').value;
+            const confirm = document.getElementById('confirm-password').value;
+
+            if (pass !== confirm) {
+                alert('Las contraseñas no coinciden. Por favor verifica.');
+                return;
+            }
+
+            // Aquí iría la llamada al backend; por ahora redirige al inicio
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+
+</html>

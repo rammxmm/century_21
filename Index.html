@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxe Estate - Obras Maestras Arquitectónicas</title>
+    <meta name="description"
+        content="Plataforma inmobiliaria premium impulsada por inteligencia artificial para encontrar tu hogar ideal.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Estilos de cuentas por tipo (agregar al final de styles.css si prefieres un solo archivo) -->
+    <link rel="stylesheet" href="account.css">
+</head>
+
+<body>
+    <!-- Barra de Navegación -->
+    <nav class="navbar-light">
+        <div class="logo-light">CENTURY 21</div>
+        <ul class="nav-links-light">
+            <li><a href="#" id="nav-buy">COMPRAR</a></li>
+            <li><a href="#" id="nav-rent">RENTAR</a></li>
+            <li><a href="#" id="nav-explore">EXPLORAR</a></li>
+        </ul>
+        <!-- Las acciones del navbar son inyectadas por account.js según el estado de sesión -->
+        <div class="nav-actions">
+            <!-- Contenido dinámico: se reemplaza con botón de cuenta o login -->
+        </div>
+    </nav>
+
+    <!-- Banner de bienvenida por tipo de cuenta (inyectado por account.js) -->
+
+    <!-- Sección Hero -->
+    <header class="hero-light">
+        <div class="hero-overlay"></div>
+        <div class="hero-content-light">
+            <h1>Curando Obras Maestras Arquitectónicas</h1>
+
+            <div class="main-search-wrapper">
+                <div class="search-bar-white">
+                    <svg class="search-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="trigger-ai-modal" placeholder="Busca tu hogar ideal..." readonly>
+                    <button class="btn-dark-search">BUSCAR</button>
+                </div>
+
+                <div class="filter-buttons">
+                    <button class="filter-btn active" id="btn-buy">COMPRAR</button>
+                    <button class="filter-btn" id="btn-rent">RENTAR</button>
+                    <button class="filter-btn" id="btn-explore">EXPLORAR</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Colección Destacada -->
+    <main class="featured-section">
+        <div class="featured-header">
+            <div>
+                <h2>COLECCIÓN DESTACADA</h2>
+                <p>Propiedades exclusivas seleccionadas por su importancia arquitectónica.</p>
+            </div>
+            <a href="#" class="view-all">VER TODAS &rarr;</a>
+        </div>
+
+        <!-- Tarjetas inyectadas por app.js (1 grande + 2 pequeñas) -->
+        <div class="asymmetric-grid" id="properties-container"></div>
+    </main>
+
+    <!-- Banner de publicar para Vendedores (inyectado por app.js) -->
+
+    <!-- Panel de cuenta por tipo (inyectado por account.js) -->
+
+    <!-- Sección de Todas las Propiedades (oculta por defecto) -->
+    <section class="all-properties-section hidden" id="all-properties-section">
+        <div class="properties-header">
+            <h2 id="properties-section-title">PROPIEDADES EN VENTA</h2>
+            <button class="btn-dark-search" id="btn-back-featured">← VOLVER A DESTACADAS</button>
+        </div>
+        <!-- Propiedades inyectadas por app.js -->
+        <div class="property-grid" id="full-properties-grid"></div>
+    </section>
+
+    <!-- Pie de Página -->
+    <footer class="footer-dark">
+        <div class="footer-container">
+            <div class="footer-logo">LUXE ESTATE</div>
+            <div class="footer-links">
+                <a href="#">POLÍTICA DE PRIVACIDAD</a>
+                <a href="#">TÉRMINOS DE SERVICIO</a>
+                <a href="#">CONTACTO</a>
+                <a href="#">AFILIADOS</a>
+            </div>
+            <div class="footer-copy">
+                &copy; 2024 LUXE ESTATE. EXCELENCIA ARQUITECTÓNICA.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal de Búsqueda Semántica con IA (Modo Oscuro) -->
+    <div id="ai-modal" class="ai-modal hidden">
+        <div class="ai-modal-content">
+            <button class="close-modal" id="close-ai-modal">&times;</button>
+
+            <div class="ai-header">
+                <div class="logo-white">LUXE ESTATE</div>
+                <div class="nav-links-ai">
+                    <span>COMPRAR</span>
+                    <span>RENTAR</span>
+                    <span class="active">EXPLORAR</span>
+                </div>
+            </div>
+
+            <div class="ai-body">
+                <h2>Descubre lo Extraordinario</h2>
+                <p>Describe tu propiedad ideal. Nuestra búsqueda semántica impulsada por IA entiende matices, estilo de
+                    vida y preferencias arquitectónicas para encontrar tu combinación perfecta.</p>
+
+                <div class="ai-search-box">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="#888" stroke-width="2" fill="none">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="semantic-search" placeholder="Apartamento moderno en Polanco con terraza...">
+                    <button id="btn-search-ai" class="btn-arrow-gold">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="#000" stroke-width="2" fill="none">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="semantic-matches">
+                    <div class="matches-header">COINCIDENCIAS SEMÁNTICAS</div>
+                    <div class="matches-grid" id="ai-results-container">
+                        <!-- Resultados de IA inyectados aquí -->
+                    </div>
+                    <div class="matches-footer">
+                        <span>Presiona <kbd>Enter</kbd> para ver todas las coincidencias</span>
+                        <a href="#">VER TODAS &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Detalles de Propiedad -->
+    <div id="property-details-modal" class="ai-modal hidden">
+        <div class="property-details-content">
+            <button class="close-modal" id="close-details-modal">&times;</button>
+            <div class="details-layout">
+                <div class="details-image-container">
+                    <img id="detail-image" src="" alt="Imagen de la Propiedad">
+                    <div class="detail-badges">
+                        <span class="badge-gold" id="detail-status">EN VENTA</span>
+                        <span class="badge-black" id="detail-type">CASA</span>
+                    </div>
+                </div>
+                <div class="details-info-container">
+                    <h2 id="detail-title">Título de la Propiedad</h2>
+                    <p class="detail-location" id="detail-location">Ubicación, Ciudad</p>
+                    <h3 class="detail-price" id="detail-price">$0,000,000</h3>
+
+                    <div class="detail-amenities">
+                        <div class="amenity-item"><span>🛏</span> <span id="detail-beds">0</span> Habitaciones</div>
+                        <div class="amenity-item"><span>🚿</span> <span id="detail-baths">0</span> Baños</div>
+                        <div class="amenity-item"><span>📐</span> <span id="detail-area">0</span> m²</div>
+                    </div>
+
+                    <div class="detail-description">
+                        <h4>Acerca de esta propiedad</h4>
+                        <p id="detail-desc">La descripción va aquí...</p>
+                    </div>
+
+                    <div class="detail-tags" id="detail-tags">
+                        <!-- Etiquetas inyectadas aquí -->
+                    </div>
+
+                    <!-- El texto del botón cambia según el tipo de cuenta -->
+                    <button class="btn-gold detail-action-btn">Contactar Agente</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts — account.js primero, luego app.js -->
+    <script src="account.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
