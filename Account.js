@@ -1,41 +1,31 @@
-/* ==========================================================================
-   ACCOUNT.JS — Gestión de sesión y diferenciación por tipo de cuenta
-   Sin Firebase por ahora: usa localStorage para simular el estado de sesión.
-   Cuando integres Firebase, solo reemplaza las funciones getSession/setSession.
-   ========================================================================== */
+import { auth, db, googleProvider } from './firebase-init.js';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const Account = (() => {
+window.Account = (() => {
 
-    // ------------------------------------------------------------------
-    // SIMULACIÓN DE SESIÓN (reemplazar con Firebase Auth en producción)
-    // ------------------------------------------------------------------
+    let currentUserData = null;
 
     function getSession() {
-        try {
-            const raw = localStorage.getItem('c21_session');
-            return raw ? JSON.parse(raw) : null;
-        } catch { return null; }
+        return currentUserData;
     }
 
-    function setSession(user) {
-        localStorage.setItem('c21_session', JSON.stringify(user));
+    async function setSession(user) {
+        if (!user) return;
+        if (!user.favoritos) user.favoritos = [];
+        if (!user.propiedades) user.propiedades = [];
+        if (!user.clientes) user.clientes = [];
+        
+        currentUserData = user;
+        
+        if (auth.currentUser) {
+            try {
+                await setDoc(doc(db, "usuarios", auth.currentUser.uid), user);
+            } catch (e) {
+                console.error("Error saving session to Firebase", e);
+            }
+        }
     }
-
-    function clearSession() {
-        localStorage.removeItem('c21_session');
-    }
-
-    // Usuario de demo para cada tipo (para poder probar sin backend)
-    const DEMO_USERS = {
-        comprador: { nombre: 'Ana García', tipo: 'comprador', avatar: 'AG' },
-        vendedor: { nombre: 'Carlos Méndez', tipo: 'vendedor', avatar: 'CM' },
-        agente: { nombre: 'Sofía Ramírez', tipo: 'agente', avatar: 'SR' },
-        inversionista: { nombre: 'Luis Torres', tipo: 'inversionista', avatar: 'LT' },
-    };
-
-    // ------------------------------------------------------------------
-    // CONFIGURACIÓN POR TIPO DE CUENTA
-    // ------------------------------------------------------------------
 
     const CONFIG = {
         comprador: {
@@ -47,14 +37,14 @@ const Account = (() => {
         },
         vendedor: {
             btnLabel: 'Publicar Propiedad',
-            btnAction: () => showPanel('panel-vendedor'),
+            btnAction: () => document.getElementById('publish-modal')?.classList.remove('hidden'),
             greeting: 'Tu portafolio te espera',
             badgeColor: '#27ae60',
             badgeLabel: 'VENDEDOR',
         },
         agente: {
             btnLabel: 'Gestionar Listings',
-            btnAction: () => showPanel('panel-agente'),
+            btnAction: () => document.getElementById('client-modal')?.classList.remove('hidden'),
             greeting: 'Gestiona tu cartera',
             badgeColor: '#8e44ad',
             badgeLabel: 'AGENTE',
@@ -68,14 +58,9 @@ const Account = (() => {
         },
     };
 
-    // ------------------------------------------------------------------
-    // APLICAR ESTADO DE SESIÓN AL DOM
-    // ------------------------------------------------------------------
-
     function applySession() {
         const user = getSession();
 
-        // Siempre limpiar clases anteriores
         document.body.classList.remove(
             'cuenta-comprador', 'cuenta-vendedor',
             'cuenta-agente', 'cuenta-inversionista', 'sin-sesion'
@@ -84,6 +69,8 @@ const Account = (() => {
         if (!user) {
             document.body.classList.add('sin-sesion');
             renderNavGuest();
+            document.getElementById('account-banner')?.remove();
+            document.getElementById('account-panel')?.remove();
             return;
         }
 
@@ -98,7 +85,6 @@ const Account = (() => {
         renderAccountPanel(tipo);
     }
 
-    // Navbar para usuario NO autenticado
     function renderNavGuest() {
         const actionsEl = document.querySelector('.nav-actions');
         if (!actionsEl) return;
@@ -108,7 +94,6 @@ const Account = (() => {
         `;
     }
 
-    // Navbar para usuario autenticado
     function renderNavUser(user, cfg) {
         const actionsEl = document.querySelector('.nav-actions');
         if (!actionsEl) return;
@@ -124,17 +109,16 @@ const Account = (() => {
                         <strong>${user.nombre}</strong>
                         <span class="account-badge" style="background:${cfg.badgeColor}">${cfg.badgeLabel}</span>
                     </div>
+                    <a href="#" onclick="Account.openProfile()" class="dropdown-link">👤 Mi Perfil</a>
                     <div class="dropdown-divider"></div>
                     <a href="#" onclick="Account.logout()" class="logout-link">Cerrar Sesión</a>
                 </div>
             </div>
         `;
 
-        // Acción del botón principal
         document.querySelector('.btn-cuenta-action')
             ?.addEventListener('click', cfg.btnAction);
 
-        // Toggle dropdown
         document.querySelector('.user-avatar')
             ?.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -146,9 +130,7 @@ const Account = (() => {
         });
     }
 
-    // Banner de bienvenida debajo del navbar
     function renderAccountBanner(user, cfg) {
-        // Eliminar banner anterior si existe
         document.getElementById('account-banner')?.remove();
 
         const banner = document.createElement('div');
@@ -166,33 +148,35 @@ const Account = (() => {
             </div>
         `;
 
-        // Insertar después del navbar
         const navbar = document.querySelector('.navbar-light');
         navbar?.insertAdjacentElement('afterend', banner);
 
         renderBannerStats(user.tipo);
     }
 
-    // Estadísticas en el banner según tipo
     function renderBannerStats(tipo) {
         const statsEl = document.getElementById('banner-stats');
         if (!statsEl) return;
 
+        const favLength = getSession().favoritos ? getSession().favoritos.length : 0;
+        const propLength = getSession().propiedades ? getSession().propiedades.length : 0;
+        const clientLength = getSession().clientes ? getSession().clientes.length : 0;
+
         const stats = {
             comprador: `
-                <div class="stat-item"><span class="stat-num">12</span><span class="stat-label">Favoritos</span></div>
-                <div class="stat-item"><span class="stat-num">3</span><span class="stat-label">Visitas agendadas</span></div>
-                <div class="stat-item"><span class="stat-num">5</span><span class="stat-label">Búsquedas guardadas</span></div>
+                <div class="stat-item"><span class="stat-num">${favLength}</span><span class="stat-label">Favoritos</span></div>
+                <div class="stat-item"><span class="stat-num">0</span><span class="stat-label">Visitas agendadas</span></div>
+                <div class="stat-item"><span class="stat-num">0</span><span class="stat-label">Búsquedas guardadas</span></div>
             `,
             vendedor: `
-                <div class="stat-item"><span class="stat-num">2</span><span class="stat-label">Propiedades activas</span></div>
-                <div class="stat-item"><span class="stat-num">18</span><span class="stat-label">Interesados este mes</span></div>
-                <div class="stat-item"><span class="stat-num">$4.2M</span><span class="stat-label">Valor en cartera</span></div>
+                <div class="stat-item"><span class="stat-num">${propLength}</span><span class="stat-label">Propiedades activas</span></div>
+                <div class="stat-item"><span class="stat-num">0</span><span class="stat-label">Interesados este mes</span></div>
+                <div class="stat-item"><span class="stat-num">$0</span><span class="stat-label">Valor en cartera</span></div>
             `,
             agente: `
-                <div class="stat-item"><span class="stat-num">7</span><span class="stat-label">Listings activos</span></div>
-                <div class="stat-item"><span class="stat-num">34</span><span class="stat-label">Clientes activos</span></div>
-                <div class="stat-item"><span class="stat-num">$12.8M</span><span class="stat-label">En gestión</span></div>
+                <div class="stat-item"><span class="stat-num">0</span><span class="stat-label">Listings activos</span></div>
+                <div class="stat-item"><span class="stat-num">${clientLength}</span><span class="stat-label">Clientes activos</span></div>
+                <div class="stat-item"><span class="stat-num">$0</span><span class="stat-label">En gestión</span></div>
             `,
             inversionista: `
                 <div class="stat-item"><span class="stat-num">8.4%</span><span class="stat-label">ROI promedio</span></div>
@@ -204,12 +188,7 @@ const Account = (() => {
         statsEl.innerHTML = stats[tipo] || '';
     }
 
-    // ------------------------------------------------------------------
-    // PANELES ESPECÍFICOS POR TIPO (se insertan debajo de featured)
-    // ------------------------------------------------------------------
-
     function renderAccountPanel(tipo) {
-        // Eliminar panel anterior
         document.getElementById('account-panel')?.remove();
 
         const panel = document.createElement('section');
@@ -228,71 +207,57 @@ const Account = (() => {
 
         panel.innerHTML = renderFn();
 
-        // Insertar antes del footer
         const footer = document.querySelector('.footer-dark');
         footer?.insertAdjacentElement('beforebegin', panel);
     }
 
     function renderPanelComprador() {
+        const user = getSession();
+        const favs = user.favoritos || [];
+        const favsHtml = favs.length > 0 
+            ? favs.map(f => `<div class="visita-card"><strong>Propiedad ID: ${f}</strong></div>`).join('')
+            : `<div class="favorito-empty"><span>🏡</span><p>Aún no tienes favoritos.</p></div>`;
+
         return `
             <div class="panel-header">
                 <h2>MIS FAVORITOS</h2>
                 <p>Propiedades que has guardado para revisitar.</p>
             </div>
-            <div class="panel-favoritos">
-                <div class="favorito-empty">
-                    <span>🏡</span>
-                    <p>Aún no tienes favoritos. Haz clic en el ❤ de cualquier propiedad para guardarla.</p>
-                </div>
-            </div>
-            <div class="panel-header" style="margin-top:3rem">
-                <h2>VISITAS AGENDADAS</h2>
-            </div>
-            <div class="visitas-grid">
-                ${['Penthouse Santa Fe · Mié 14 May, 11:00 AM', 'Villa Lomas · Vie 16 May, 3:00 PM', 'Loft Polanco · Lun 19 May, 10:00 AM']
-                .map(v => `
-                    <div class="visita-card">
-                        <div class="visita-icon">📅</div>
-                        <div class="visita-info">
-                            <strong>${v.split('·')[0]}</strong>
-                            <span>${v.split('·')[1]}</span>
-                        </div>
-                        <button class="btn-visita-cancel">Cancelar</button>
-                    </div>`).join('')}
+            <div class="panel-favoritos" id="favoritos-container">
+                ${favsHtml}
             </div>
         `;
     }
 
     function renderPanelVendedor() {
-        const propiedades = [
-            { nombre: 'Penthouse Santa Fe', precio: '$4,200,000', status: 'Activo', interesados: 12, vistas: 340 },
-            { nombre: 'Casa Lomas Altas', precio: '$8,500,000', status: 'En revisión', interesados: 6, vistas: 180 },
-        ];
+        const user = getSession();
+        const propiedades = user.propiedades || [];
+        
+        const propsHtml = propiedades.length > 0 ? propiedades.map(p => `
+            <div class="mi-propiedad-card">
+                <div class="mp-header">
+                    <h4>${p.titulo}</h4>
+                    <span class="mp-status status-activo">Activo</span>
+                </div>
+                <div class="mp-precio">${p.precio}</div>
+                <div class="mp-stats">
+                    <div><span>0</span> Vistas</div>
+                    <div><span>0</span> Interesados</div>
+                </div>
+                <div class="mp-actions">
+                    <button class="btn-mp" onclick="alert('Editando...')">✏ Editar</button>
+                </div>
+            </div>
+        `).join('') : '<p>No tienes propiedades publicadas aún.</p>';
+
         return `
             <div class="panel-header">
                 <h2>MIS PROPIEDADES</h2>
-                <button class="btn-gold btn-sm" onclick="alert('Formulario de publicación...')">+ Publicar Nueva</button>
+                <button class="btn-gold btn-sm" onclick="document.getElementById('publish-modal')?.classList.remove('hidden')">+ Publicar Nueva</button>
             </div>
-            <div class="mis-propiedades-grid">
-                ${propiedades.map(p => `
-                    <div class="mi-propiedad-card">
-                        <div class="mp-header">
-                            <h4>${p.nombre}</h4>
-                            <span class="mp-status status-${p.status === 'Activo' ? 'activo' : 'revision'}">${p.status}</span>
-                        </div>
-                        <div class="mp-precio">${p.precio}</div>
-                        <div class="mp-stats">
-                            <div><span>${p.vistas}</span> Vistas</div>
-                            <div><span>${p.interesados}</span> Interesados</div>
-                        </div>
-                        <div class="mp-actions">
-                            <button class="btn-mp" onclick="alert('Editando...')">✏ Editar</button>
-                            <button class="btn-mp" onclick="alert('Ver interesados...')">👥 Interesados</button>
-                            <button class="btn-mp btn-mp-danger" onclick="alert('Pausando...')">⏸ Pausar</button>
-                        </div>
-                    </div>
-                `).join('')}
-                <div class="mi-propiedad-card mp-nueva" onclick="alert('Formulario de publicación...')">
+            <div class="mis-propiedades-grid" id="mis-propiedades-grid">
+                ${propsHtml}
+                <div class="mi-propiedad-card mp-nueva" onclick="document.getElementById('publish-modal')?.classList.remove('hidden')">
                     <span>+</span>
                     <p>Publicar nueva propiedad</p>
                 </div>
@@ -301,37 +266,27 @@ const Account = (() => {
     }
 
     function renderPanelAgente() {
-        const clientes = [
-            { nombre: 'Roberto Sánchez', tipo: 'Comprador', presupuesto: '$3–5M', estado: 'Activo' },
-            { nombre: 'Patricia Vega', tipo: 'Vendedor', propiedad: 'Casa Pedregal', estado: 'Negociando' },
-            { nombre: 'Marco Herrera', tipo: 'Comprador', presupuesto: '$8–12M', estado: 'Buscando' },
-            { nombre: 'Daniela Cruz', tipo: 'Vendedor', propiedad: 'Depto Polanco', estado: 'Activo' },
-        ];
+        const user = getSession();
+        const clientes = user.clientes || [];
+        
+        const clientsHtml = clientes.length > 0 ? clientes.map(c => `
+            <div class="cliente-card">
+                <div class="cliente-avatar">${c.nombre.split(' ').map(n => n[0]).join('').substring(0, 2)}</div>
+                <div class="cliente-info">
+                    <strong>${c.nombre}</strong>
+                    <span class="cliente-tipo">${c.tipo}</span>
+                </div>
+                <span class="cliente-estado estado-${c.estado.toLowerCase().replace(' ', '-')}">${c.estado}</span>
+            </div>
+        `).join('') : '<p>Aún no tienes clientes.</p>';
+
         return `
             <div class="panel-header">
                 <h2>MI CARTERA DE CLIENTES</h2>
-                <button class="btn-gold btn-sm" onclick="alert('Agregar cliente...')">+ Agregar Cliente</button>
+                <button class="btn-gold btn-sm" onclick="document.getElementById('client-modal')?.classList.remove('hidden')">+ Agregar Cliente</button>
             </div>
-            <div class="clientes-grid">
-                ${clientes.map(c => `
-                    <div class="cliente-card">
-                        <div class="cliente-avatar">${c.nombre.split(' ').map(n => n[0]).join('')}</div>
-                        <div class="cliente-info">
-                            <strong>${c.nombre}</strong>
-                            <span class="cliente-tipo">${c.tipo}</span>
-                            <span class="cliente-detalle">${c.presupuesto || c.propiedad}</span>
-                        </div>
-                        <span class="cliente-estado estado-${c.estado.toLowerCase().replace(' ', '-')}">${c.estado}</span>
-                    </div>
-                `).join('')}
-            </div>
-            <div class="panel-header" style="margin-top:3rem">
-                <h2>MIS LISTINGS ACTIVOS</h2>
-                <span class="panel-subtitle">7 propiedades en gestión</span>
-            </div>
-            <div class="agente-listings-note">
-                <p>Los listings aparecen en la sección principal de propiedades con tu insignia de agente. Cada tarjeta muestra botones de <strong>Editar</strong> e <strong>Interesados</strong> solo para ti.</p>
-                <button class="btn-gold btn-sm" onclick="alert('Ver todos los listings...')">Ver todos mis listings →</button>
+            <div class="clientes-grid" id="clientes-grid">
+                ${clientsHtml}
             </div>
         `;
     }
@@ -382,44 +337,214 @@ const Account = (() => {
         `;
     }
 
-    // Mostrar panel por ID (helper para botones)
     function showPanel(panelId) {
         const el = document.getElementById(panelId);
         if (el) el.scrollIntoView({ behavior: 'smooth' });
         else document.getElementById('account-panel')?.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // ------------------------------------------------------------------
-    // API PÚBLICA
-    // ------------------------------------------------------------------
-
-    function login(tipo) {
-        const user = DEMO_USERS[tipo];
-        if (!user) return;
-        setSession(user);
-        applySession();
-    }
-
-    function logout() {
-        clearSession();
-        document.getElementById('account-banner')?.remove();
-        document.getElementById('account-panel')?.remove();
-        applySession();
-    }
-
-    function switchDemo(tipo) {
-        login(tipo);
-        // Cerrar dropdown
+    function openProfile() {
+        const user = getSession();
+        if(!user) return;
+        document.getElementById('profile-name').value = user.nombre || '';
+        document.getElementById('profile-email').value = user.correo || '';
+        document.getElementById('profile-phone').value = user.telefono || '';
+        document.getElementById('profile-modal')?.classList.remove('hidden');
         document.querySelector('.user-dropdown')?.classList.remove('open');
     }
 
-    function init() {
-        applySession();
+    async function loginWithEmail(email, password) {
+        try {
+            window.isLoggingIn = true;
+            await signInWithEmailAndPassword(auth, email, password);
+            window.location.href = 'index.html';
+        } catch (error) {
+            window.isLoggingIn = false;
+            alert('Error al iniciar sesión: ' + error.message);
+        }
     }
 
-    return { init, login, logout, switchDemo, getSession };
+    async function registerWithEmail(email, password, nombre, tipo) {
+        try {
+            window.isLoggingIn = true;
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            
+            const userData = {
+                nombre: nombre,
+                correo: email,
+                tipo: tipo,
+                avatar: nombre.split(' ').map(n=>n[0]).join('').substring(0, 2).toUpperCase(),
+                favoritos: [],
+                propiedades: [],
+                clientes: []
+            };
+            await setDoc(doc(db, "usuarios", user.uid), userData);
+            window.location.href = 'index.html';
+        } catch (error) {
+            window.isLoggingIn = false;
+            alert('Error al registrarse: ' + error.message);
+        }
+    }
+
+    async function loginWithGoogle(defaultTipo = 'comprador') {
+        try {
+            window.isLoggingIn = true;
+            const result = await signInWithPopup(auth, googleProvider);
+            const user = result.user;
+            
+            const docRef = doc(db, "usuarios", user.uid);
+            const docSnap = await getDoc(docRef);
+            
+            if (!docSnap.exists()) {
+                const userData = {
+                    nombre: user.displayName || 'Usuario',
+                    correo: user.email,
+                    tipo: defaultTipo,
+                    avatar: (user.displayName || 'U').split(' ').map(n=>n[0]).join('').substring(0, 2).toUpperCase(),
+                    favoritos: [],
+                    propiedades: [],
+                    clientes: []
+                };
+                await setDoc(docRef, userData);
+            }
+            window.location.href = 'index.html';
+        } catch (error) {
+            window.isLoggingIn = false;
+            alert('Error con Google Sign-In: ' + error.message);
+        }
+    }
+
+    function logout() {
+        signOut(auth).then(() => {
+            window.location.href = 'index.html'; // Redirect to home
+        }).catch((error) => {
+            console.error(error);
+        });
+    }
+
+    function initModals() {
+        document.getElementById('close-profile-modal')?.addEventListener('click', () => {
+            document.getElementById('profile-modal').classList.add('hidden');
+        });
+        document.getElementById('profile-form')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = getSession();
+            if(user) {
+                user.nombre = document.getElementById('profile-name').value;
+                user.correo = document.getElementById('profile-email').value;
+                user.telefono = document.getElementById('profile-phone').value;
+                user.avatar = user.nombre.split(' ').map(n=>n[0]).join('').substring(0, 2).toUpperCase();
+                setSession(user);
+                applySession();
+                document.getElementById('profile-modal').classList.add('hidden');
+            }
+        });
+
+        document.getElementById('close-publish-modal')?.addEventListener('click', () => {
+            document.getElementById('publish-modal').classList.add('hidden');
+        });
+        document.getElementById('publish-form')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = getSession();
+            if(user) {
+                const nuevaPropiedad = {
+                    id: 'prop_' + Date.now(),
+                    titulo: document.getElementById('pub-title').value,
+                    precio: document.getElementById('pub-price').value,
+                    ubicacion: document.getElementById('pub-location').value
+                };
+                user.propiedades.push(nuevaPropiedad);
+                setSession(user);
+                applySession();
+                document.getElementById('publish-modal').classList.add('hidden');
+                e.target.reset();
+            }
+        });
+
+        document.getElementById('close-client-modal')?.addEventListener('click', () => {
+            document.getElementById('client-modal').classList.add('hidden');
+        });
+        document.getElementById('client-form')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = getSession();
+            if(user) {
+                const nuevoCliente = {
+                    id: 'client_' + Date.now(),
+                    nombre: document.getElementById('client-name').value,
+                    tipo: document.getElementById('client-type').value,
+                    estado: document.getElementById('client-status').value
+                };
+                user.clientes.push(nuevoCliente);
+                setSession(user);
+                applySession();
+                document.getElementById('client-modal').classList.add('hidden');
+                e.target.reset();
+            }
+        });
+    }
+
+    function init() {
+        onAuthStateChanged(auth, async (user) => {
+            try {
+                if (user) {
+                    const docRef = doc(db, "usuarios", user.uid);
+                    let docSnap = null;
+                    try {
+                        docSnap = await getDoc(docRef);
+                    } catch (e) {
+                        console.error("Error fetching user data:", e);
+                    }
+
+                    if (docSnap && docSnap.exists()) {
+                        currentUserData = docSnap.data();
+                    } else {
+                        // User exists in Auth but not in Firestore.
+                        // Create a default session in memory so UI doesn't crash
+                        currentUserData = {
+                            nombre: user.displayName || 'Usuario',
+                            correo: user.email,
+                            tipo: 'comprador',
+                            avatar: (user.displayName || 'U').split(' ').map(n=>n[0]).join('').substring(0, 2).toUpperCase(),
+                            favoritos: [],
+                            propiedades: [],
+                            clientes: []
+                        };
+                    }
+                    
+                    const path = window.location.pathname;
+                    if ((path.includes('login') || path.includes('register')) && !window.isLoggingIn) {
+                        window.location.href = 'index.html';
+                    } else if (document.querySelector('.nav-actions') && !window.isLoggingIn) {
+                        applySession();
+                        if (window.appLoadProperties) window.appLoadProperties();
+                    }
+                } else {
+                    currentUserData = null;
+                    if (document.querySelector('.nav-actions')) {
+                        applySession();
+                    }
+                }
+            } catch (err) {
+                console.error("Error in onAuthStateChanged:", err);
+            }
+        });
+
+        initModals();
+    }
+
+    return { 
+        init, 
+        logout, 
+        getSession, 
+        setSession, 
+        applySession, 
+        openProfile,
+        loginWithEmail,
+        registerWithEmail,
+        loginWithGoogle
+    };
 
 })();
 
-// Inicializar cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', () => Account.init());
+document.addEventListener('DOMContentLoaded', () => window.Account.init());

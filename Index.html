@@ -224,9 +224,95 @@
         </div>
     </div>
 
+    <!-- Modal de Perfil de Usuario -->
+    <div id="profile-modal" class="ai-modal hidden">
+        <div class="ai-modal-content" style="max-width: 500px;">
+            <button class="close-modal" id="close-profile-modal">&times;</button>
+            <div class="ai-body">
+                <h2>Mi Perfil</h2>
+                <form id="profile-form" style="display:flex; flex-direction:column; gap:1rem; margin-top:1.5rem;">
+                    <div>
+                        <label style="color:#aaa; font-size:0.9rem;">Nombre Completo</label>
+                        <input type="text" id="profile-name" class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                    </div>
+                    <div>
+                        <label style="color:#aaa; font-size:0.9rem;">Correo Electrónico</label>
+                        <input type="email" id="profile-email" class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                    </div>
+                    <div>
+                        <label style="color:#aaa; font-size:0.9rem;">Teléfono</label>
+                        <input type="tel" id="profile-phone" class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                    </div>
+                    <button type="submit" class="btn-gold" style="width:100%; margin-top:1rem; padding:1rem;">Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Publicar Propiedad (Vendedores) -->
+    <div id="publish-modal" class="ai-modal hidden">
+        <div class="ai-modal-content" style="max-width: 600px;">
+            <button class="close-modal" id="close-publish-modal">&times;</button>
+            <div class="ai-body">
+                <h2>Publicar Nueva Propiedad</h2>
+                <form id="publish-form" style="display:flex; flex-direction:column; gap:1rem; margin-top:1.5rem;">
+                    <div>
+                        <label style="color:#aaa; font-size:0.9rem;">Título</label>
+                        <input type="text" id="pub-title" required class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                    </div>
+                    <div style="display:flex; gap:1rem;">
+                        <div style="flex:1;">
+                            <label style="color:#aaa; font-size:0.9rem;">Precio</label>
+                            <input type="text" id="pub-price" required placeholder="$0,000,000" class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                        </div>
+                        <div style="flex:1;">
+                            <label style="color:#aaa; font-size:0.9rem;">Ubicación</label>
+                            <input type="text" id="pub-location" required class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-gold" style="width:100%; margin-top:1rem; padding:1rem;">Publicar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar Cliente (Agentes) -->
+    <div id="client-modal" class="ai-modal hidden">
+        <div class="ai-modal-content" style="max-width: 500px;">
+            <button class="close-modal" id="close-client-modal">&times;</button>
+            <div class="ai-body">
+                <h2>Agregar Cliente</h2>
+                <form id="client-form" style="display:flex; flex-direction:column; gap:1rem; margin-top:1.5rem;">
+                    <div>
+                        <label style="color:#aaa; font-size:0.9rem;">Nombre del Cliente</label>
+                        <input type="text" id="client-name" required class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                    </div>
+                    <div style="display:flex; gap:1rem;">
+                        <div style="flex:1;">
+                            <label style="color:#aaa; font-size:0.9rem;">Tipo</label>
+                            <select id="client-type" class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                                <option value="Comprador">Comprador</option>
+                                <option value="Vendedor">Vendedor</option>
+                            </select>
+                        </div>
+                        <div style="flex:1;">
+                            <label style="color:#aaa; font-size:0.9rem;">Estado</label>
+                            <select id="client-status" class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                                <option value="Activo">Activo</option>
+                                <option value="Buscando">Buscando</option>
+                                <option value="Negociando">Negociando</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-gold" style="width:100%; margin-top:1rem; padding:1rem;">Guardar Cliente</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts — account.js primero, luego app.js -->
-    <script src="account.js"></script>
-    <script src="app.js"></script>
+    <script type="module" src="account.js"></script>
+    <script type="module" src="app.js"></script>
 </body>
 
 </html>

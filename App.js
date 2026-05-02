@@ -57,12 +57,39 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadProperties() {
         try {
             const response = await fetch('properties.json');
-            allProperties = await response.json();
+            let baseProps = await response.json();
+
+            // Usa window.Account si Account no está en el scope local
+            const accountApi = window.Account || (typeof Account !== 'undefined' ? Account : null);
+            const session = accountApi ? accountApi.getSession() : null;
+
+            if (session && session.propiedades) {
+                const extraProps = session.propiedades.map(p => ({
+                    id: p.id,
+                    title: p.titulo,
+                    price: p.precio,
+                    location: p.ubicacion,
+                    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80',
+                    status: 'buy',
+                    type: 'casa',
+                    bedrooms: 3,
+                    bathrooms: 2,
+                    area: 250,
+                    description: 'Propiedad publicada recientemente.',
+                    tags: ['Nueva', 'Exclusiva']
+                }));
+                baseProps = [...extraProps, ...baseProps];
+            }
+
+            allProperties = baseProps;
             renderFeaturedCollection(allProperties);
         } catch (error) {
             console.error("Error al cargar propiedades:", error);
         }
     }
+    
+    // Exponer para que account.js pueda llamarlo al resolver el Auth
+    window.appLoadProperties = loadProperties;
 
     // ==========================================
     // COLECCIÓN DESTACADA (1 grande + 2 pequeñas)
@@ -183,14 +210,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // FAVORITOS (solo comprador)
     // ==========================================
     function toggleFavorito(el, id) {
-        const session = typeof Account !== 'undefined' ? Account.getSession() : null;
+        const accountApi = window.Account || (typeof Account !== 'undefined' ? Account : null);
+        const session = accountApi ? accountApi.getSession() : null;
         if (!session) {
             alert('Inicia sesión para guardar favoritos.');
             return;
         }
-        el.classList.toggle('favorited');
-        el.style.fill = el.classList.contains('favorited') ? '#B79860' : 'none';
-        el.style.stroke = el.classList.contains('favorited') ? '#B79860' : 'currentColor';
+        
+        if (!session.favoritos) session.favoritos = [];
+        const index = session.favoritos.indexOf(id);
+        if (index === -1) {
+            session.favoritos.push(id);
+            el.classList.add('favorited');
+            el.style.fill = '#B79860';
+            el.style.stroke = '#B79860';
+        } else {
+            session.favoritos.splice(index, 1);
+            el.classList.remove('favorited');
+            el.style.fill = 'none';
+            el.style.stroke = 'currentColor';
+        }
+        
+        accountApi.setSession(session);
+        accountApi.applySession(); // Re-render stats and panel
     }
     window.toggleFavorito = toggleFavorito;
 
