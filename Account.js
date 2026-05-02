@@ -124,10 +124,6 @@ const Account = (() => {
                         <strong>${user.nombre}</strong>
                         <span class="account-badge" style="background:${cfg.badgeColor}">${cfg.badgeLabel}</span>
                     </div>
-                    <a href="#" onclick="Account.switchDemo('comprador')">🔵 Demo Comprador</a>
-                    <a href="#" onclick="Account.switchDemo('vendedor')">🟢 Demo Vendedor</a>
-                    <a href="#" onclick="Account.switchDemo('agente')">🟣 Demo Agente</a>
-                    <a href="#" onclick="Account.switchDemo('inversionista')">🟡 Demo Inversionista</a>
                     <div class="dropdown-divider"></div>
                     <a href="#" onclick="Account.logout()" class="logout-link">Cerrar Sesión</a>
                 </div>
