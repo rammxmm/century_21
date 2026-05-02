@@ -214,17 +214,76 @@ window.Account = (() => {
     function renderPanelComprador() {
         const user = getSession();
         const favs = user.favoritos || [];
-        const favsHtml = favs.length > 0 
-            ? favs.map(f => `<div class="visita-card"><strong>Propiedad ID: ${f}</strong></div>`).join('')
-            : `<div class="favorito-empty"><span>🏡</span><p>Aún no tienes favoritos.</p></div>`;
+        const visitas = user.visitas || [];
+        const allProps = window.allProperties || [];
+
+        let favsHtml = `<div class="favorito-empty" style="grid-column: span 2;"><span>🏡</span><p>Aún no tienes favoritos.</p></div>`;
+        
+        if (favs.length > 0 && allProps.length > 0) {
+            favsHtml = favs.map(id => {
+                const prop = allProps.find(p => p.id === id);
+                if(!prop) return '';
+                return `
+                    <div class="property-card-small" style="cursor:pointer; margin-bottom:1rem; width:100%" onclick="window.openDetailsModal(${prop.id})">
+                        <div class="card-img-small" style="height:150px;">
+                            <img src="${prop.image}" alt="${prop.title}">
+                        </div>
+                        <div class="card-info-small">
+                            <h3 style="font-size:1.1rem; margin-bottom:0.2rem;">${prop.price}</h3>
+                            <p style="font-size:0.9rem; margin-bottom:0.5rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${prop.title}</p>
+                            <div class="card-amenities" style="font-size:0.8rem;">
+                                <span>🛏 ${prop.bedrooms}</span>
+                                <span>🚿 ${prop.bathrooms}</span>
+                                <span>📐 ${prop.area}m²</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        let visitasHtml = `<div class="favorito-empty"><span>🗓</span><p>Aún no tienes visitas agendadas.</p></div>`;
+        if (visitas.length > 0 && allProps.length > 0) {
+            visitasHtml = visitas.map((v, idx) => {
+                const prop = allProps.find(p => p.id === parseInt(v.propertyId));
+                const title = prop ? prop.title : `Propiedad #${v.propertyId}`;
+                const img = prop ? prop.image : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=200&q=80';
+                return `
+                    <div class="visita-card" style="display:flex; gap:1rem; align-items:center; text-align:left; padding:1rem; background:#111; border:1px solid #333; border-radius:8px; margin-bottom:1rem;">
+                        <img src="${img}" style="width:80px; height:80px; object-fit:cover; border-radius:4px; cursor:pointer;" onclick="window.openDetailsModal(${v.propertyId})">
+                        <div style="flex:1">
+                            <h4 style="margin:0 0 0.3rem 0; cursor:pointer;" onclick="window.openDetailsModal(${v.propertyId})">${title}</h4>
+                            <p style="margin:0; color:#aaa; font-size:0.9rem">📅 ${v.date} ⏰ ${v.time}</p>
+                            <span style="display:inline-block; margin-top:0.3rem; font-size:0.8rem; padding:0.2rem 0.5rem; background:${v.status === 'Cancelada' ? '#550000' : '#B79860'}; color:${v.status === 'Cancelada' ? '#fff' : '#000'}; border-radius:4px;">${v.status || 'Confirmada'}</span>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                            ${v.status !== 'Cancelada' ? `<button class="btn-mp" onclick="window.Account.cancelVisit(${idx})" style="background:#550000; color:white; border:none">Cancelar</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
 
         return `
-            <div class="panel-header">
-                <h2>MIS FAVORITOS</h2>
-                <p>Propiedades que has guardado para revisitar.</p>
-            </div>
-            <div class="panel-favoritos" id="favoritos-container">
-                ${favsHtml}
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:2rem; width:100%;">
+                <div>
+                    <div class="panel-header">
+                        <h2>MIS VISITAS</h2>
+                        <p>Tus citas programadas con agentes.</p>
+                    </div>
+                    <div class="panel-visitas">
+                        ${visitasHtml}
+                    </div>
+                </div>
+                <div>
+                    <div class="panel-header">
+                        <h2>MIS FAVORITOS</h2>
+                        <p>Propiedades que has guardado para revisitar.</p>
+                    </div>
+                    <div class="panel-favoritos" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; align-items:start;">
+                        ${favsHtml}
+                    </div>
+                </div>
             </div>
         `;
     }
@@ -482,6 +541,40 @@ window.Account = (() => {
                 e.target.reset();
             }
         });
+
+        // Lógica de Visitas
+        document.getElementById('close-visit-modal')?.addEventListener('click', () => {
+            document.getElementById('visit-modal').classList.add('hidden');
+        });
+        document.getElementById('visit-form')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = getSession();
+            if(user) {
+                if (!user.visitas) user.visitas = [];
+                const nuevaVisita = {
+                    propertyId: document.getElementById('visit-property-id').value,
+                    date: document.getElementById('visit-date').value,
+                    time: document.getElementById('visit-time').value,
+                    status: 'Confirmada'
+                };
+                user.visitas.push(nuevaVisita);
+                setSession(user);
+                applySession();
+                document.getElementById('visit-modal').classList.add('hidden');
+                alert('¡Visita agendada exitosamente!');
+                e.target.reset();
+            }
+        });
+    }
+
+    async function cancelVisit(index) {
+        if (!confirm('¿Estás seguro de cancelar esta visita?')) return;
+        const user = getSession();
+        if (user && user.visitas && user.visitas[index]) {
+            user.visitas[index].status = 'Cancelada';
+            await setSession(user);
+            applySession();
+        }
     }
 
     function init() {
@@ -542,7 +635,8 @@ window.Account = (() => {
         openProfile,
         loginWithEmail,
         registerWithEmail,
-        loginWithGoogle
+        loginWithGoogle,
+        cancelVisit
     };
 
 })();

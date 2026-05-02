@@ -249,6 +249,29 @@
         </div>
     </div>
 
+    <!-- Modal para Agendar Visita -->
+    <div id="visit-modal" class="ai-modal hidden">
+        <div class="ai-modal-content" style="max-width: 400px;">
+            <button class="close-modal" id="close-visit-modal">&times;</button>
+            <div class="ai-body">
+                <h2>Agendar Visita</h2>
+                <p style="color:#aaa; font-size:0.9rem; margin-top:0.5rem;" id="visit-property-title">Selecciona el horario</p>
+                <form id="visit-form" style="display:flex; flex-direction:column; gap:1rem; margin-top:1.5rem;">
+                    <input type="hidden" id="visit-property-id">
+                    <div>
+                        <label style="color:#aaa; font-size:0.9rem;">Fecha</label>
+                        <input type="date" id="visit-date" required class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                    </div>
+                    <div>
+                        <label style="color:#aaa; font-size:0.9rem;">Hora</label>
+                        <input type="time" id="visit-time" required class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                    </div>
+                    <button type="submit" class="btn-gold" style="width:100%; margin-top:1rem; padding:1rem;">Confirmar Visita</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal para Publicar Propiedad (Vendedores) -->
     <div id="publish-modal" class="ai-modal hidden">
         <div class="ai-modal-content" style="max-width: 600px;">

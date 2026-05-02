@@ -82,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             allProperties = baseProps;
+            window.allProperties = allProperties;
             renderFeaturedCollection(allProperties);
         } catch (error) {
             console.error("Error al cargar propiedades:", error);
@@ -350,12 +351,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function attachCardListeners() {
         const cards = document.querySelectorAll('.property-card-large, .property-card-small, .match-card');
         cards.forEach(card => {
-            card.addEventListener('click', () => {
+            // Usar onclick para evitar duplicados si se llama múltiples veces
+            card.onclick = () => {
                 const id = parseInt(card.getAttribute('data-id'));
                 if (id) openDetailsModal(id);
-            });
+            };
         });
     }
+    
+    // Exponer para que account.js pueda abrir el modal
+    window.openDetailsModal = openDetailsModal;
 
     function openDetailsModal(id) {
         const prop = allProperties.find(p => p.id === id);
@@ -379,6 +384,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (actionBtn) {
             const isAgente = document.body.classList.contains('cuenta-agente');
             const isVendedor = document.body.classList.contains('cuenta-vendedor');
+            const session = window.Account ? window.Account.getSession() : null;
+
             if (isAgente) {
                 actionBtn.textContent = 'Gestionar Propiedad';
                 actionBtn.onclick = () => alert('Panel de gestión...');
@@ -386,8 +393,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 actionBtn.textContent = 'Editar Publicación';
                 actionBtn.onclick = () => alert('Editando publicación...');
             } else {
-                actionBtn.textContent = 'Contactar Agente';
-                actionBtn.onclick = null;
+                actionBtn.textContent = '🗓 Agendar Visita';
+                actionBtn.onclick = () => {
+                    if (!session) {
+                        alert('Por favor, inicia sesión para agendar una visita.');
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                    document.getElementById('visit-property-id').value = id;
+                    document.getElementById('visit-property-title').textContent = prop.title;
+                    document.getElementById('visit-modal').classList.remove('hidden');
+                    detailsModal.classList.add('hidden'); // Ocultar el de detalles
+                };
             }
         }
 
