@@ -10,14 +10,8 @@
         "bathrooms": 2.5,
         "area": 180,
         "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1000&auto=format&fit=crop",
-        "description": "Exclusivo penthouse con vista panorámica, diseño minimalista, ideal para ejecutivos. Acabados de lujo, seguridad 24/7 y acceso directo al elevador.",
-        "tags": [
-            "lujo",
-            "vista",
-            "seguridad",
-            "exclusivo",
-            "minimalista"
-        ]
+        "description": "Exclusivo penthouse con vista panorámica de la ciudad, diseño minimalista e ideal para ejecutivos. Acabados de lujo, seguridad 24/7 y acceso directo al elevador privado.",
+        "tags": ["lujo", "vista", "seguridad", "exclusivo", "minimalista", "penthouse"]
     },
     {
         "id": 2,
@@ -25,100 +19,152 @@
         "type": "Casa",
         "price": "$45,000 MXN / mes",
         "status": "rent",
-        "location": "Coyoacán, CDMX",
+        "location": "San Pedro Garza García, Monterrey",
         "bedrooms": 4,
         "bathrooms": 3,
         "area": 250,
         "image": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=1000&auto=format&fit=crop",
-        "description": "Hermosa casa estilo colonial moderno, amplio jardín perfecto para niños y mascotas (pet friendly). Calle tranquila y arbolada.",
-        "tags": [
-            "familia",
-            "jardín",
-            "pet friendly",
-            "tranquilo",
-            "colonial"
-        ]
+        "description": "Hermosa casa estilo colonial moderno, amplio jardín perfecto para niños y mascotas (pet friendly). Calle tranquila y arbolada en una de las zonas más exclusivas de Monterrey.",
+        "tags": ["familia", "jardín", "pet friendly", "tranquilo", "colonial"]
     },
     {
         "id": 3,
-        "title": "Loft Industrial Centro",
+        "title": "Loft Industrial Contemporáneo",
         "type": "Departamento",
         "price": "$2,800,000 MXN",
         "status": "buy",
-        "location": "Roma Norte, CDMX",
+        "location": "Chapultepec, Guadalajara",
         "bedrooms": 1,
         "bathrooms": 1,
         "area": 85,
         "image": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=1000&auto=format&fit=crop",
-        "description": "Increíble loft estilo industrial, techos de doble altura, paredes de ladrillo expuesto y ventanales inmensos. Excelente iluminación natural. Cerca de parques y restaurantes.",
-        "tags": [
-            "loft",
-            "industrial",
-            "joven",
-            "iluminado",
-            "céntrico",
-            "parques"
-        ]
+        "description": "Increíble loft estilo industrial, techos de doble altura, paredes de ladrillo expuesto y ventanales inmensos. Excelente iluminación natural. Cerca de parques y restaurantes de moda.",
+        "tags": ["loft", "industrial", "joven", "iluminado", "céntrico", "parques"]
     },
     {
         "id": 4,
-        "title": "Residencia Minimalista",
+        "title": "Residencia Minimalista Inteligente",
         "type": "Casa",
         "price": "$12,000,000 MXN",
         "status": "buy",
-        "location": "San Ángel, CDMX",
+        "location": "Lomas de Chapultepec, CDMX",
         "bedrooms": 4,
         "bathrooms": 4.5,
         "area": 400,
         "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=1000&auto=format&fit=crop",
-        "description": "Espectacular residencia minimalista inteligente. Sistema de domótica completo, alberca climatizada, paneles solares y acabados de mármol. Sustentable y moderna.",
-        "tags": [
-            "minimalista",
-            "lujo",
-            "inteligente",
-            "domótica",
-            "alberca",
-            "sustentable"
-        ]
+        "description": "Espectacular residencia minimalista con sistema de domótica completo, alberca climatizada, paneles solares y acabados de mármol importado. Sustentable y de vanguardia.",
+        "tags": ["minimalista", "lujo", "inteligente", "domótica", "alberca", "sustentable"]
     },
     {
         "id": 5,
-        "title": "Departamento Acogedor",
+        "title": "Departamento Acogedor con Balcón",
         "type": "Departamento",
         "price": "$18,500 MXN / mes",
         "status": "rent",
-        "location": "Narvarte, CDMX",
+        "location": "Centro Histórico, Querétaro",
         "bedrooms": 2,
         "bathrooms": 1.5,
         "area": 75,
         "image": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1000&auto=format&fit=crop",
-        "description": "Departamento acogedor e iluminado, recién remodelado. Excelente ubicación para familias pequeñas o parejas. Cuenta con balcón y cocina integral.",
-        "tags": [
-            "acogedor",
-            "remodelado",
-            "balcón",
-            "céntrico",
-            "parejas"
-        ]
+        "description": "Departamento acogedor e iluminado, recién remodelado en zona patrimonial. Excelente ubicación para familias pequeñas o parejas. Cuenta con balcón y cocina integral.",
+        "tags": ["acogedor", "remodelado", "balcón", "céntrico", "parejas"]
     },
     {
         "id": 6,
-        "title": "Estudio para Nómadas",
+        "title": "Estudio para Nómadas Digitales",
         "type": "Estudio",
         "price": "$15,000 MXN / mes",
         "status": "rent",
-        "location": "Condesa, CDMX",
+        "location": "Zona Río, Tijuana",
         "bedrooms": 1,
         "bathrooms": 1,
         "area": 50,
         "image": "https://images.unsplash.com/photo-1502672260266-1c1e5250ad11?q=80&w=1000&auto=format&fit=crop",
-        "description": "Estudio amueblado y listo para habitar. Internet de alta velocidad incluido, área de coworking en el edificio. Ideal para nómadas digitales y estudiantes.",
-        "tags": [
-            "estudio",
-            "nómada",
-            "amueblado",
-            "coworking",
-            "céntrico"
-        ]
+        "description": "Estudio amueblado y listo para habitar. Internet de alta velocidad incluido, área de coworking en el edificio. Ideal para nómadas digitales y profesionales.",
+        "tags": ["estudio", "nómada", "amueblado", "coworking", "céntrico"]
+    },
+    {
+        "id": 7,
+        "title": "Penthouse Frente al Mar",
+        "type": "Departamento",
+        "price": "$8,500,000 MXN",
+        "status": "buy",
+        "location": "Zona Hotelera, Cancún",
+        "bedrooms": 3,
+        "bathrooms": 3,
+        "area": 220,
+        "image": "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?q=80&w=1000&auto=format&fit=crop",
+        "description": "Espectacular penthouse con vista al Mar Caribe, terraza privada con alberca infinity y acceso a playa exclusiva. Acabados de primera con diseño tropical contemporáneo.",
+        "tags": ["playa", "vista", "alberca", "lujo", "terraza", "penthouse", "exclusivo"]
+    },
+    {
+        "id": 8,
+        "title": "Casa en Fraccionamiento Premium",
+        "type": "Casa",
+        "price": "$3,900,000 MXN",
+        "status": "buy",
+        "location": "Cumbres, Monterrey",
+        "bedrooms": 3,
+        "bathrooms": 2,
+        "area": 180,
+        "image": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=1000&auto=format&fit=crop",
+        "description": "Casa en fraccionamiento cerrado con vigilancia 24/7, parques y áreas comunes. Perfecta para familias. Acabados modernos y cocina abierta integrada a sala.",
+        "tags": ["familia", "seguridad", "moderna", "cocina abierta", "fraccionamiento"]
+    },
+    {
+        "id": 9,
+        "title": "Villa Colonial en el Centro",
+        "type": "Casa",
+        "price": "$55,000 MXN / mes",
+        "status": "rent",
+        "location": "Centro Histórico, Mérida",
+        "bedrooms": 5,
+        "bathrooms": 4,
+        "area": 350,
+        "image": "https://images.unsplash.com/photo-1599427303058-f04cbcf4756f?q=80&w=1000&auto=format&fit=crop",
+        "description": "Impresionante villa colonial restaurada con patio central, alberca, techos altos y arcos. Patrimonio arquitectónico de la Ciudad Blanca, ideal para quienes buscan cultura y tranquilidad.",
+        "tags": ["colonial", "tranquilo", "alberca", "cultura", "patio", "histórico"]
+    },
+    {
+        "id": 10,
+        "title": "Departamento de Lujo en Torre",
+        "type": "Departamento",
+        "price": "$4,200,000 MXN",
+        "status": "buy",
+        "location": "Américas, Querétaro",
+        "bedrooms": 2,
+        "bathrooms": 2,
+        "area": 110,
+        "image": "https://images.unsplash.com/photo-1567767292278-a4f21aa2d36e?q=80&w=1000&auto=format&fit=crop",
+        "description": "Departamento en torre residencial de lujo con amenidades de primer nivel: roof garden, gym, sala de cine y concierge. Vista panorámica a la Sierra Queretana.",
+        "tags": ["lujo", "moderno", "amenidades", "vista", "gym", "concierge"]
+    },
+    {
+        "id": 11,
+        "title": "Residencia con Alberca en Privada",
+        "type": "Casa",
+        "price": "$6,800,000 MXN",
+        "status": "buy",
+        "location": "Puerta de Hierro, Guadalajara",
+        "bedrooms": 4,
+        "bathrooms": 3.5,
+        "area": 320,
+        "image": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=1000&auto=format&fit=crop",
+        "description": "Hermosa residencia en privada exclusiva. Jardín amplio con alberca, cuarto de servicio, cocina abierta tipo gourmet y sala de usos múltiples. Ideal para familias.",
+        "tags": ["familia", "alberca", "jardín", "cocina abierta", "exclusivo", "privada"]
+    },
+    {
+        "id": 12,
+        "title": "Loft Moderno en Zona Tec",
+        "type": "Departamento",
+        "price": "$22,000 MXN / mes",
+        "status": "rent",
+        "location": "Zona Tec, Monterrey",
+        "bedrooms": 1,
+        "bathrooms": 1,
+        "area": 65,
+        "image": "https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=1000&auto=format&fit=crop",
+        "description": "Loft moderno amueblado a metros del ITESM. Ideal para estudiantes y profesionistas jóvenes. Edificio con gym, lavandería y roof garden. Internet gigabit incluido.",
+        "tags": ["loft", "moderno", "joven", "amueblado", "coworking", "céntrico"]
     }
 ]

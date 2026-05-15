@@ -374,13 +374,38 @@ document.addEventListener('DOMContentLoaded', () => {
         propertiesSectionTitle.textContent = "RESULTADOS DE BÚSQUEDA";
         [btnBuy, btnRent, btnExplore].forEach(btn => btn?.classList.remove('active'));
 
+        // Alias de ubicaciones: valor del select → variantes que puede tener prop.location
+        const LOCATION_ALIASES = {
+            'cdmx': ['cdmx', 'ciudad de méxico', 'ciudad de mexico'],
+            'monterrey': ['monterrey'],
+            'guadalajara': ['guadalajara'],
+            'tijuana': ['tijuana'],
+            'puebla': ['puebla'],
+            'querétaro': ['querétaro', 'queretaro'],
+            'mérida': ['mérida', 'merida'],
+            'león': ['león', 'leon'],
+            'cancún': ['cancún', 'cancun'],
+            'san luis potosí': ['san luis potosí', 'san luis potosi'],
+            'aguascalientes': ['aguascalientes'],
+            'hermosillo': ['hermosillo'],
+            'chihuahua': ['chihuahua'],
+            'saltillo': ['saltillo'],
+            'morelia': ['morelia'],
+            'culiacán': ['culiacán', 'culiacan'],
+            'veracruz': ['veracruz'],
+            'oaxaca': ['oaxaca'],
+        };
+
         const filtered = allProperties.filter(prop => {
-            const propLoc = (prop.location || '').toLowerCase();
+            const propLoc  = (prop.location || '').toLowerCase();
             const propType = (prop.type || '').toLowerCase();
-            // Extraer el precio numérico (ej. "$4,200,000" -> 4200000)
             const propPrice = parseFloat((prop.price || '').replace(/[^0-9.]/g, '')) || 0;
 
-            if (loc && !propLoc.includes(loc)) return false;
+            if (loc) {
+                const aliases = LOCATION_ALIASES[loc] || [loc];
+                const locMatch = aliases.some(alias => propLoc.includes(alias));
+                if (!locMatch) return false;
+            }
             if (type && !propType.includes(type)) return false;
             if (propPrice < minPrice || propPrice > maxPrice) return false;
 
