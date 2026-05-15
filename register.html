@@ -155,7 +155,43 @@
             font-size: 3rem;
         }
 
-        /* Ajustes responsive */
+        /* Error inline del campo email */
+        .field-error {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+            font-size: 0.78rem;
+            color: #e74c3c;
+            line-height: 1.4;
+            animation: fadeInError 0.25s ease;
+        }
+
+        /* Banner de error general (contraseña débil, red, etc.) */
+        .form-error-banner {
+            background: #fff0f0;
+            border: 1px solid #f5c6c6;
+            border-radius: 6px;
+            color: #c0392b;
+            font-size: 0.82rem;
+            font-weight: 500;
+            padding: 0.7rem 1rem;
+            margin-bottom: 1rem;
+            animation: fadeInError 0.25s ease;
+        }
+
+        @keyframes fadeInError {
+            from { opacity: 0; transform: translateY(-4px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Estado de carga del botón */
+        .btn-login:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
         @media (max-width: 768px) {
             .register-right {
                 padding: 3rem 1.5rem;
@@ -222,7 +258,9 @@
                     <!-- Correo electrónico -->
                     <div class="form-group">
                         <label for="email">CORREO ELECTRÓNICO</label>
-                        <input type="email" id="email" placeholder="nombre@ejemplo.com" required>
+                        <input type="email" id="email" placeholder="nombre@ejemplo.com" required
+                            oninput="clearError()">
+                        <div id="email-error" class="field-error" style="display:none;"></div>
                     </div>
 
                     <!-- Teléfono -->
@@ -273,8 +311,11 @@
                         </label>
                     </div>
 
+                    <!-- Error general del formulario -->
+                    <div id="form-error" class="form-error-banner" style="display:none;"></div>
+
                     <!-- Botón de envío -->
-                    <button type="submit" class="btn-login">CREAR MI CUENTA</button>
+                    <button type="submit" class="btn-login" id="btn-submit">CREAR MI CUENTA</button>
 
                 </form>
 
@@ -377,8 +418,50 @@
             }
 
             const nombreCompleto = `${nombre} ${apellido}`;
-            window.Account.registerWithEmail(email, pass, nombreCompleto, tipo);
+            clearError();
+            // Deshabilitar botón mientras procesa
+            const btn = document.getElementById('btn-submit');
+            if (btn) { btn.disabled = true; btn.textContent = 'CREANDO CUENTA...'; }
+            window.Account.registerWithEmail(email, pass, nombreCompleto, tipo)
+                .finally(() => {
+                    if (btn) { btn.disabled = false; btn.textContent = 'CREAR MI CUENTA'; }
+                });
         }
+
+        /* ------------------------------------------------------------------
+           Manejo de errores inline
+           ------------------------------------------------------------------ */
+        function clearError() {
+            const emailErr = document.getElementById('email-error');
+            const formErr  = document.getElementById('form-error');
+            if (emailErr) emailErr.style.display = 'none';
+            if (formErr)  formErr.style.display  = 'none';
+        }
+
+        window.showRegisterError = function(msg, code) {
+            const isEmailTaken = code === 'auth/email-already-in-use';
+
+            if (isEmailTaken) {
+                // Marcar el campo de email con error
+                const emailInput = document.getElementById('email');
+                const emailErr   = document.getElementById('email-error');
+                if (emailInput) emailInput.style.borderBottomColor = '#e74c3c';
+                if (emailErr) {
+                    emailErr.innerHTML = `
+                        <span>⚠ ${msg}</span>
+                        <a href="login.html" style="color:#B79860;font-weight:600;margin-left:4px;">Ir a iniciar sesión →</a>
+                    `;
+                    emailErr.style.display = 'flex';
+                }
+            } else {
+                // Error general en el banner del formulario
+                const formErr = document.getElementById('form-error');
+                if (formErr) {
+                    formErr.textContent = '⚠ ' + msg;
+                    formErr.style.display = 'block';
+                }
+            }
+        };
     </script>
 </body>
 

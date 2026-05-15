@@ -1957,3 +1957,386 @@ a {
         flex-direction: column;
     }
 }
+
+/* ==========================================================================
+   NUEVAS FEATURES — Timer, Recomendaciones, Búsquedas Guardadas
+   ========================================================================== */
+
+/* Barra de progreso de coincidencia en match-card */
+.match-percent-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+}
+.match-percent-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 2px;
+    transition: width 0.6s ease;
+}
+.match-location {
+    font-size: 0.8rem;
+    color: #aaa;
+    margin: 0.1rem 0 !important;
+}
+.match-tags {
+    font-size: 0.75rem;
+    color: #666;
+    margin: 0 !important;
+}
+
+/* Botón guardar búsqueda dentro del grid de resultados */
+.save-search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 0.8rem 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    font-size: 0.85rem;
+    color: #888;
+}
+
+/* Badge de recomendación (encima de la tarjeta) */
+.rec-badge {
+    position: absolute;
+    bottom: 60px;
+    left: 0;
+    right: 0;
+    background: linear-gradient(90deg, rgba(183,152,96,0.92), rgba(183,152,96,0.7));
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    text-align: center;
+    backdrop-filter: blur(4px);
+}
+
+/* Panel comprador — grid 2 columnas */
+.comprador-panel-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    width: 100%;
+}
+.comprador-col { display: flex; flex-direction: column; }
+
+/* Visita card */
+.visita-card {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    text-align: left;
+    transition: border-color 0.2s;
+}
+.visita-card:hover { border-color: var(--gold); }
+.visita-status {
+    display: inline-block;
+    margin-top: 0.3rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+/* Lista de búsquedas guardadas */
+.saved-searches-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 1rem;
+}
+.saved-search-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 0.8rem 1.2rem;
+    transition: border-color 0.2s;
+}
+.saved-search-item:hover { border-color: var(--gold); }
+.saved-query {
+    font-size: 0.9rem;
+    color: #ccc;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .comprador-panel-grid { grid-template-columns: 1fr; }
+    .save-search-bar { flex-direction: column; align-items: flex-start; }
+}
+
+/* ==========================================================================
+   MODAL OVERLAY — backdrop genérico para modales tipo "card"
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.72);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+.modal-overlay.hidden { opacity: 0; pointer-events: none; }
+
+@keyframes modalSlideUp {
+    from { opacity: 0; transform: translateY(24px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ==========================================================================
+   MODAL AGENDAR VISITA
+   ========================================================================== */
+.visit-modal-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    max-width: 860px;
+    min-height: 520px;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    animation: modalSlideUp 0.35s cubic-bezier(0.16,1,0.3,1);
+}
+.visit-close-btn {
+    position: absolute;
+    top: 18px; right: 22px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    font-size: 1.3rem;
+    cursor: pointer;
+    z-index: 10;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+}
+.visit-close-btn:hover { background: rgba(183,152,96,0.7); }
+
+.visit-img-side {
+    position: relative;
+    min-height: 300px;
+    overflow: hidden;
+}
+.visit-img-side img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    position: absolute; inset: 0;
+    transition: transform 0.6s ease;
+}
+.visit-modal-card:hover .visit-img-side img { transform: scale(1.04); }
+
+.visit-img-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 2rem;
+    background: linear-gradient(transparent, rgba(0,0,0,0.85));
+}
+.visit-img-badge {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+}
+.visit-img-overlay h3 { font-size: 1.3rem; color: #fff; margin-bottom: 0.3rem; line-height: 1.3; }
+.visit-img-overlay p  { color: #aaa; font-size: 0.88rem; }
+
+.visit-form-side {
+    background: #0D0D0D;
+    padding: 2.8rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.visit-step-label {
+    font-size: 0.62rem;
+    letter-spacing: 2px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+}
+.visit-form-header h2 { font-size: 1.7rem; color: #fff; margin-bottom: 0.4rem; line-height: 1.2; }
+.visit-form-header p  { color: #666; font-size: 0.85rem; margin-bottom: 2rem; }
+
+.visit-field { margin-bottom: 1.6rem; }
+.visit-field label {
+    display: block;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    font-weight: 700;
+    color: #666;
+    margin-bottom: 0.7rem;
+}
+.visit-date-input {
+    width: 100%;
+    background: #181818;
+    border: 1px solid #2e2e2e;
+    border-radius: 4px;
+    color: #fff;
+    padding: 0.85rem 1rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+    color-scheme: dark;
+    transition: border-color 0.2s;
+}
+.visit-date-input:focus { border-color: var(--gold); }
+
+.time-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+.time-slot-btn {
+    background: #181818;
+    border: 1px solid #2e2e2e;
+    color: #bbb;
+    padding: 0.6rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-align: center;
+}
+.time-slot-btn:hover  { border-color: var(--gold); color: var(--gold); }
+.time-slot-btn.selected {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #000;
+    font-weight: 700;
+}
+.btn-visit-confirm {
+    width: 100%;
+    background: var(--gold);
+    color: #000;
+    border: none;
+    padding: 1rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    margin-top: 0.5rem;
+}
+.btn-visit-confirm:hover:not(:disabled) {
+    background: var(--gold-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(183,152,96,0.25);
+}
+.btn-visit-confirm:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+/* ==========================================================================
+   MODAL MI PERFIL
+   ========================================================================== */
+.profile-modal-card {
+    background: #fff;
+    width: 100%;
+    max-width: 460px;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    animation: modalSlideUp 0.35s cubic-bezier(0.16,1,0.3,1);
+}
+.profile-close-btn {
+    position: absolute;
+    top: 16px; right: 20px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #fff;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 10;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+}
+.profile-close-btn:hover { background: rgba(183,152,96,0.6); }
+
+.profile-card-header {
+    background: linear-gradient(145deg, #0A0A0A 0%, #1c1c1c 100%);
+    padding: 2.8rem 2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.profile-avatar-lg {
+    width: 68px; height: 68px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: #000;
+    font-size: 1.4rem;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 0.9rem;
+    border: 3px solid rgba(255,255,255,0.08);
+    box-shadow: 0 0 0 6px rgba(183,152,96,0.12);
+    letter-spacing: 0;
+}
+.profile-account-label {
+    font-size: 0.62rem;
+    letter-spacing: 2.5px;
+    font-weight: 700;
+    color: var(--gold);
+}
+.profile-card-body { padding: 2rem 2.5rem 2.5rem; }
+.profile-card-title h2 { font-size: 1.3rem; color: var(--dark-gray); margin-bottom: 0.25rem; }
+.profile-card-title p  { color: #aaa; font-size: 0.83rem; margin-bottom: 1.8rem; }
+
+.pf-field { margin-bottom: 1.4rem; }
+.pf-field label {
+    display: block;
+    font-size: 0.6rem;
+    letter-spacing: 1.8px;
+    font-weight: 700;
+    color: #999;
+    margin-bottom: 0.4rem;
+}
+.pf-field input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid var(--border-gray);
+    padding: 0.65rem 0;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--dark-gray);
+    background: transparent;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.pf-field input:focus  { border-bottom-color: var(--dark-gray); }
+.pf-field input[readonly] { color: #bbb; cursor: not-allowed; }
+.pf-submit { width: 100%; padding: 0.95rem; margin-top: 0.5rem; font-size: 0.82rem; letter-spacing: 1px; }
+
+/* Responsive */
+@media (max-width: 680px) {
+    .visit-modal-card  { grid-template-columns: 1fr; }
+    .visit-img-side    { min-height: 200px; }
+    .visit-form-side   { padding: 2rem 1.5rem; }
+    .profile-card-body { padding: 1.5rem; }
+    .time-slots-grid   { grid-template-columns: repeat(2, 1fr); }
+}

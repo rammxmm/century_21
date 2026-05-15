@@ -12,12 +12,14 @@ window.Account = (() => {
 
     async function setSession(user) {
         if (!user) return;
-        if (!user.favoritos) user.favoritos = [];
-        if (!user.propiedades) user.propiedades = [];
-        if (!user.clientes) user.clientes = [];
-        
+        if (!user.favoritos)          user.favoritos          = [];
+        if (!user.propiedades)        user.propiedades        = [];
+        if (!user.clientes)           user.clientes           = [];
+        if (!user.historial)          user.historial          = [];
+        if (!user.busquedasGuardadas) user.busquedasGuardadas = [];
+
         currentUserData = user;
-        
+
         if (auth.currentUser) {
             try {
                 await setDoc(doc(db, "usuarios", auth.currentUser.uid), user);
@@ -162,11 +164,16 @@ window.Account = (() => {
         const propLength = getSession().propiedades ? getSession().propiedades.length : 0;
         const clientLength = getSession().clientes ? getSession().clientes.length : 0;
 
+        const savedLength = getSession().busquedasGuardadas ? getSession().busquedasGuardadas.length : 0;
+        const visitasLength = getSession().visitas ? getSession().visitas.length : 0;
+        const historialLength = getSession().historial ? getSession().historial.length : 0;
+
         const stats = {
             comprador: `
                 <div class="stat-item"><span class="stat-num">${favLength}</span><span class="stat-label">Favoritos</span></div>
-                <div class="stat-item"><span class="stat-num">0</span><span class="stat-label">Visitas agendadas</span></div>
-                <div class="stat-item"><span class="stat-num">0</span><span class="stat-label">Búsquedas guardadas</span></div>
+                <div class="stat-item"><span class="stat-num">${visitasLength}</span><span class="stat-label">Visitas agendadas</span></div>
+                <div class="stat-item"><span class="stat-num">${savedLength}</span><span class="stat-label">Búsquedas guardadas</span></div>
+                <div class="stat-item"><span class="stat-num">${historialLength}</span><span class="stat-label">Propiedades exploradas</span></div>
             `,
             vendedor: `
                 <div class="stat-item"><span class="stat-num">${propLength}</span><span class="stat-label">Propiedades activas</span></div>
@@ -211,87 +218,125 @@ window.Account = (() => {
         footer?.insertAdjacentElement('beforebegin', panel);
     }
 
-    function renderPanelComprador() {
-        const user = getSession();
-        const favs = user.favoritos || [];
-        const visitas = user.visitas || [];
-        const allProps = window.allProperties || [];
-
-        let favsHtml = `<div class="favorito-empty" style="grid-column: span 2;"><span>🏡</span><p>Aún no tienes favoritos.</p></div>`;
-        
-        if (favs.length > 0 && allProps.length > 0) {
-            favsHtml = favs.map(id => {
-                const prop = allProps.find(p => p.id === id);
-                if(!prop) return '';
-                return `
-                    <div class="property-card-small" style="cursor:pointer; margin-bottom:1rem; width:100%" onclick="window.openDetailsModal(${prop.id})">
-                        <div class="card-img-small" style="height:150px;">
-                            <img src="${prop.image}" alt="${prop.title}">
-                        </div>
-                        <div class="card-info-small">
-                            <h3 style="font-size:1.1rem; margin-bottom:0.2rem;">${prop.price}</h3>
-                            <p style="font-size:0.9rem; margin-bottom:0.5rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${prop.title}</p>
-                            <div class="card-amenities" style="font-size:0.8rem;">
-                                <span>🛏 ${prop.bedrooms}</span>
-                                <span>🚿 ${prop.bathrooms}</span>
-                                <span>📐 ${prop.area}m²</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        let visitasHtml = `<div class="favorito-empty"><span>🗓</span><p>Aún no tienes visitas agendadas.</p></div>`;
-        if (visitas.length > 0 && allProps.length > 0) {
-            visitasHtml = visitas.map((v, idx) => {
-                const prop = allProps.find(p => p.id === parseInt(v.propertyId));
-                const title = prop ? prop.title : `Propiedad #${v.propertyId}`;
-                const img = prop ? prop.image : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=200&q=80';
-                return `
-                    <div class="visita-card" style="display:flex; gap:1rem; align-items:center; text-align:left; padding:1rem; background:#111; border:1px solid #333; border-radius:8px; margin-bottom:1rem;">
-                        <img src="${img}" style="width:80px; height:80px; object-fit:cover; border-radius:4px; cursor:pointer;" onclick="window.openDetailsModal(${v.propertyId})">
-                        <div style="flex:1">
-                            <h4 style="margin:0 0 0.3rem 0; cursor:pointer;" onclick="window.openDetailsModal(${v.propertyId})">${title}</h4>
-                            <p style="margin:0; color:#aaa; font-size:0.9rem">📅 ${v.date} ⏰ ${v.time}</p>
-                            <span style="display:inline-block; margin-top:0.3rem; font-size:0.8rem; padding:0.2rem 0.5rem; background:${v.status === 'Cancelada' ? '#550000' : '#B79860'}; color:${v.status === 'Cancelada' ? '#fff' : '#000'}; border-radius:4px;">${v.status || 'Confirmada'}</span>
-                        </div>
-                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
-                            ${v.status !== 'Cancelada' ? `<button class="btn-mp" onclick="window.Account.cancelVisit(${idx})" style="background:#550000; color:white; border:none">Cancelar</button>` : ''}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
+    function renderPropCard(prop) {
         return `
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:2rem; width:100%;">
-                <div>
-                    <div class="panel-header">
-                        <h2>MIS VISITAS</h2>
-                        <p>Tus citas programadas con agentes.</p>
-                    </div>
-                    <div class="panel-visitas">
-                        ${visitasHtml}
-                    </div>
+            <div class="property-card-small" style="cursor:pointer;" onclick="window.openDetailsModal(${prop.id})">
+                <div class="card-img-small" style="height:150px;">
+                    <img src="${prop.image}" alt="${prop.title}">
                 </div>
-                <div>
-                    <div class="panel-header">
-                        <h2>MIS FAVORITOS</h2>
-                        <p>Propiedades que has guardado para revisitar.</p>
-                    </div>
-                    <div class="panel-favoritos" style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; align-items:start;">
-                        ${favsHtml}
+                <div class="card-info-small">
+                    <h3 style="font-size:1rem; margin-bottom:0.2rem;">${prop.price}</h3>
+                    <p style="font-size:0.85rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${prop.title}</p>
+                    <div class="card-amenities" style="font-size:0.8rem;">
+                        <span>🛌 ${prop.bedrooms}</span>
+                        <span>🚿 ${prop.bathrooms}</span>
+                        <span>📐 ${prop.area}m²</span>
                     </div>
                 </div>
             </div>
         `;
     }
 
+    function renderPanelComprador() {
+        const user = getSession();
+        const favs     = user.favoritos || [];
+        const visitas  = user.visitas   || [];
+        const guardadas = user.busquedasGuardadas || [];
+        const allProps = window.allProperties || [];
+
+        // --- FAVORITOS ---
+        const favsHtml = favs.length > 0 && allProps.length > 0
+            ? favs.map(id => { const p = allProps.find(x => x.id === id); return p ? renderPropCard(p) : ''; }).join('')
+            : `<div class="favorito-empty" style="grid-column:span 2;"><span>🏡</span><p>Aún no tienes favoritos.</p></div>`;
+
+        // --- VISITAS ---
+        let visitasHtml = `<div class="favorito-empty"><span>🗓</span><p>Aún no tienes visitas agendadas.</p></div>`;
+        if (visitas.length > 0 && allProps.length > 0) {
+            visitasHtml = visitas.map((v, idx) => {
+                const prop  = allProps.find(p => p.id === parseInt(v.propertyId));
+                const title = prop ? prop.title : `Propiedad #${v.propertyId}`;
+                const img   = prop ? prop.image : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=200&q=80';
+                return `
+                    <div class="visita-card">
+                        <img src="${img}" style="width:80px;height:80px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="window.openDetailsModal(${v.propertyId})">
+                        <div style="flex:1">
+                            <h4 style="margin:0 0 0.3rem 0;cursor:pointer;" onclick="window.openDetailsModal(${v.propertyId})">${title}</h4>
+                            <p style="margin:0;color:#aaa;font-size:0.9rem">📅 ${v.date} ⏰ ${v.time}</p>
+                            <span class="visita-status" style="background:${v.status==='Cancelada'?'#550000':'#B79860'};color:${v.status==='Cancelada'?'#fff':'#000'}">${v.status||'Confirmada'}</span>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                            ${v.status!=='Cancelada'?`<button class="btn-mp" onclick="window.Account.cancelVisit(${idx})" style="background:#550000;color:white;border:none">Cancelar</button>`:''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // --- BÚSOUEDAS GUARDADAS ---
+        const savedHtml = guardadas.length > 0
+            ? guardadas.map((q, i) => `
+                <div class="saved-search-item">
+                    <span class="saved-query">🔍 &ldquo;${q}&rdquo;</span>
+                    <div style="display:flex;gap:0.5rem;">
+                        <button class="btn-mp" onclick="document.getElementById('semantic-search').value='${q.replace(/'/g,"\\'")}';
+                            document.getElementById('ai-modal').classList.remove('hidden');
+                            document.getElementById('btn-search-ai').click();">
+                            Buscar
+                        </button>
+                        <button class="btn-mp" style="background:#550000;color:white;border:none;"
+                            onclick="window.Account.deleteSearch(${i})">&#10005;</button>
+                    </div>
+                </div>
+            `).join('')
+            : `<p style="color:#666;">Guarda una búsqueda desde el modal de IA para verla aquí.</p>`;
+
+        // --- RECOMENDACIONES IA ---
+        const recs = typeof window.getRecommendations === 'function' ? window.getRecommendations() : [];
+        const recsHtml = recs.length > 0
+            ? `<div class="panel-header" style="margin-top:2.5rem;">
+                    <h2>🧠 RECOMENDADO PARA TI</h2>
+                    <p>Basado en tus favoritos e historial de visualización.</p>
+               </div>
+               <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;">
+                   ${recs.map(p => `
+                       <div onclick="window.openDetailsModal(${p.id})" style="cursor:pointer;position:relative;">
+                           ${renderPropCard(p)}
+                           <div class="rec-badge">🧠 ${p.matchPercent}% match</div>
+                       </div>
+                   `).join('')}
+               </div>`
+            : '';
+
+        return `
+            <div class="comprador-panel-grid">
+                <div class="comprador-col">
+                    <div class="panel-header">
+                        <h2>MIS VISITAS</h2>
+                        <p>Tus citas programadas con agentes.</p>
+                    </div>
+                    <div class="panel-visitas">${visitasHtml}</div>
+                </div>
+                <div class="comprador-col">
+                    <div class="panel-header">
+                        <h2>MIS FAVORITOS</h2>
+                        <p>Propiedades que has guardado para revisitar.</p>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start;">${favsHtml}</div>
+                </div>
+            </div>
+            <div class="panel-header" style="margin-top:2.5rem;">
+                <h2>🔖 MIS BÚSQUEDAS GUARDADAS</h2>
+                <p>Tus consultas de IA para retomar cuando quieras.</p>
+            </div>
+            <div class="saved-searches-list">${savedHtml}</div>
+            ${recsHtml}
+        `;
+    }
+
     function renderPanelVendedor() {
         const user = getSession();
         const propiedades = user.propiedades || [];
-        
+
         const propsHtml = propiedades.length > 0 ? propiedades.map(p => `
             <div class="mi-propiedad-card">
                 <div class="mp-header">
@@ -327,7 +372,7 @@ window.Account = (() => {
     function renderPanelAgente() {
         const user = getSession();
         const clientes = user.clientes || [];
-        
+
         const clientsHtml = clientes.length > 0 ? clientes.map(c => `
             <div class="cliente-card">
                 <div class="cliente-avatar">${c.nombre.split(' ').map(n => n[0]).join('').substring(0, 2)}</div>
@@ -404,10 +449,24 @@ window.Account = (() => {
 
     function openProfile() {
         const user = getSession();
-        if(!user) return;
-        document.getElementById('profile-name').value = user.nombre || '';
-        document.getElementById('profile-email').value = user.correo || '';
+        if (!user) return;
+        document.getElementById('profile-name').value  = user.nombre  || '';
+        document.getElementById('profile-email').value = user.correo  || '';
         document.getElementById('profile-phone').value = user.telefono || '';
+
+        // Poblar header del modal rediseñado
+        const avatarEl = document.getElementById('profile-avatar-display');
+        if (avatarEl) {
+            avatarEl.textContent = user.avatar || 'U';
+            const cfg = CONFIG[user.tipo];
+            if (cfg) avatarEl.style.background = cfg.badgeColor;
+        }
+        const labelEl = document.getElementById('profile-account-label');
+        if (labelEl) {
+            const cfg = CONFIG[user.tipo];
+            labelEl.textContent = cfg ? cfg.badgeLabel : 'CUENTA';
+        }
+
         document.getElementById('profile-modal')?.classList.remove('hidden');
         document.querySelector('.user-dropdown')?.classList.remove('open');
     }
@@ -428,21 +487,36 @@ window.Account = (() => {
             window.isLoggingIn = true;
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
-            
+
             const userData = {
                 nombre: nombre,
                 correo: email,
                 tipo: tipo,
-                avatar: nombre.split(' ').map(n=>n[0]).join('').substring(0, 2).toUpperCase(),
-                favoritos: [],
-                propiedades: [],
-                clientes: []
+                avatar: nombre.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(),
+                favoritos:          [],
+                propiedades:        [],
+                clientes:           [],
+                historial:          [],
+                busquedasGuardadas: []
             };
             await setDoc(doc(db, "usuarios", user.uid), userData);
             window.location.href = 'index.html';
         } catch (error) {
             window.isLoggingIn = false;
-            alert('Error al registrarse: ' + error.message);
+            const FIREBASE_ERRORS = {
+                'auth/email-already-in-use'  : 'Este correo ya está asociado a una cuenta. ¿Quieres iniciar sesión?',
+                'auth/invalid-email'         : 'El formato del correo no es válido.',
+                'auth/weak-password'         : 'La contraseña debe tener al menos 6 caracteres.',
+                'auth/operation-not-allowed' : 'El registro con correo está deshabilitado temporalmente.',
+                'auth/network-request-failed': 'Sin conexión. Verifica tu internet e inténtalo de nuevo.',
+            };
+            const msg = FIREBASE_ERRORS[error.code] || 'Ocurrió un error inesperado. Inténtalo más tarde.';
+            // Si la página define showRegisterError(), usarla; si no, fallback a alert
+            if (typeof window.showRegisterError === 'function') {
+                window.showRegisterError(msg, error.code);
+            } else {
+                alert(msg);
+            }
         }
     }
 
@@ -451,19 +525,21 @@ window.Account = (() => {
             window.isLoggingIn = true;
             const result = await signInWithPopup(auth, googleProvider);
             const user = result.user;
-            
+
             const docRef = doc(db, "usuarios", user.uid);
             const docSnap = await getDoc(docRef);
-            
+
             if (!docSnap.exists()) {
                 const userData = {
                     nombre: user.displayName || 'Usuario',
                     correo: user.email,
                     tipo: defaultTipo,
-                    avatar: (user.displayName || 'U').split(' ').map(n=>n[0]).join('').substring(0, 2).toUpperCase(),
-                    favoritos: [],
-                    propiedades: [],
-                    clientes: []
+                    avatar: (user.displayName || 'U').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(),
+                    favoritos:          [],
+                    propiedades:        [],
+                    clientes:           [],
+                    historial:          [],
+                    busquedasGuardadas: []
                 };
                 await setDoc(docRef, userData);
             }
@@ -489,11 +565,11 @@ window.Account = (() => {
         document.getElementById('profile-form')?.addEventListener('submit', (e) => {
             e.preventDefault();
             const user = getSession();
-            if(user) {
+            if (user) {
                 user.nombre = document.getElementById('profile-name').value;
                 user.correo = document.getElementById('profile-email').value;
                 user.telefono = document.getElementById('profile-phone').value;
-                user.avatar = user.nombre.split(' ').map(n=>n[0]).join('').substring(0, 2).toUpperCase();
+                user.avatar = user.nombre.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
                 setSession(user);
                 applySession();
                 document.getElementById('profile-modal').classList.add('hidden');
@@ -506,7 +582,7 @@ window.Account = (() => {
         document.getElementById('publish-form')?.addEventListener('submit', (e) => {
             e.preventDefault();
             const user = getSession();
-            if(user) {
+            if (user) {
                 const nuevaPropiedad = {
                     id: 'prop_' + Date.now(),
                     titulo: document.getElementById('pub-title').value,
@@ -527,7 +603,7 @@ window.Account = (() => {
         document.getElementById('client-form')?.addEventListener('submit', (e) => {
             e.preventDefault();
             const user = getSession();
-            if(user) {
+            if (user) {
                 const nuevoCliente = {
                     id: 'client_' + Date.now(),
                     nombre: document.getElementById('client-name').value,
@@ -549,7 +625,7 @@ window.Account = (() => {
         document.getElementById('visit-form')?.addEventListener('submit', (e) => {
             e.preventDefault();
             const user = getSession();
-            if(user) {
+            if (user) {
                 if (!user.visitas) user.visitas = [];
                 const nuevaVisita = {
                     propertyId: document.getElementById('visit-property-id').value,
@@ -577,6 +653,28 @@ window.Account = (() => {
         }
     }
 
+    async function saveSearch(query) {
+        const user = getSession();
+        if (!user || !query.trim()) return;
+        if (!user.busquedasGuardadas) user.busquedasGuardadas = [];
+        if (!user.busquedasGuardadas.includes(query)) {
+            user.busquedasGuardadas.push(query);
+            await setSession(user);
+            applySession();
+        }
+        // Actualizar botón visualmente
+        const btn = document.getElementById('btn-save-search');
+        if (btn) { btn.textContent = '✅ Guardada'; btn.disabled = true; }
+    }
+
+    async function deleteSearch(index) {
+        const user = getSession();
+        if (!user || !user.busquedasGuardadas) return;
+        user.busquedasGuardadas.splice(index, 1);
+        await setSession(user);
+        applySession();
+    }
+
     function init() {
         onAuthStateChanged(auth, async (user) => {
             try {
@@ -598,13 +696,13 @@ window.Account = (() => {
                             nombre: user.displayName || 'Usuario',
                             correo: user.email,
                             tipo: 'comprador',
-                            avatar: (user.displayName || 'U').split(' ').map(n=>n[0]).join('').substring(0, 2).toUpperCase(),
+                            avatar: (user.displayName || 'U').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(),
                             favoritos: [],
                             propiedades: [],
                             clientes: []
                         };
                     }
-                    
+
                     const path = window.location.pathname;
                     if ((path.includes('login') || path.includes('register')) && !window.isLoggingIn) {
                         window.location.href = 'index.html';
@@ -626,17 +724,19 @@ window.Account = (() => {
         initModals();
     }
 
-    return { 
-        init, 
-        logout, 
-        getSession, 
-        setSession, 
-        applySession, 
+    return {
+        init,
+        logout,
+        getSession,
+        setSession,
+        applySession,
         openProfile,
         loginWithEmail,
         registerWithEmail,
         loginWithGoogle,
-        cancelVisit
+        cancelVisit,
+        saveSearch,
+        deleteSearch
     };
 
 })();

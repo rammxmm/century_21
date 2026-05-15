@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afiliados - CENTURY 21</title>
+    <meta name="description" content="Programa de afiliados CENTURY 21. Únete a la red inmobiliaria más poderosa y genera ingresos recomendando propiedades.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root { --gold: #B79860; --gold-hover: #a08550; --dark: #0A0A0A; }
+        body { background: #fafafa; font-family: 'Inter', sans-serif; margin: 0; }
+
+        /* NAV */
+        .legal-nav {
+            background: var(--dark);
+            padding: 1.2rem 5%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .legal-nav-logo { color: #fff; font-weight: 800; font-size: 1.1rem; letter-spacing: 1px; text-decoration: none; }
+        .legal-nav-back {
+            color: var(--gold); font-size: 0.78rem; font-weight: 600;
+            letter-spacing: 1px; text-decoration: none;
+            border-bottom: 1px solid var(--gold); padding-bottom: 2px; transition: opacity 0.2s;
+        }
+        .legal-nav-back:hover { opacity: 0.7; }
+
+        /* HERO */
+        .af-hero {
+            background: linear-gradient(135deg, var(--dark) 0%, #111 60%, #1a1508 100%);
+            padding: 6rem 5% 5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .af-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(183,152,96,0.12) 0%, transparent 70%);
+        }
+        .af-hero-label { font-size: 0.65rem; letter-spacing: 3px; font-weight: 700; color: var(--gold); margin-bottom: 1.2rem; position: relative; }
+        .af-hero h1 { font-size: 3.2rem; color: #fff; font-weight: 700; margin-bottom: 1.2rem; line-height: 1.2; position: relative; }
+        .af-hero h1 span { color: var(--gold); }
+        .af-hero p { color: #888; font-size: 1rem; max-width: 500px; margin: 0 auto 2.5rem; line-height: 1.7; position: relative; }
+        .af-cta {
+            display: inline-block;
+            background: var(--gold);
+            color: #000;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            padding: 1rem 2.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+        .af-cta:hover { background: var(--gold-hover); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(183,152,96,0.3); }
+
+        /* STATS BAR */
+        .af-stats {
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            padding: 2.5rem 5%;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            text-align: center;
+        }
+        .af-stat-num { font-size: 2rem; font-weight: 700; color: var(--dark); }
+        .af-stat-label { font-size: 0.7rem; letter-spacing: 1.5px; color: #999; margin-top: 0.3rem; font-weight: 600; }
+
+        /* CÓMO FUNCIONA */
+        .af-section { padding: 5rem 5%; max-width: 1200px; margin: 0 auto; }
+        .af-section-label { font-size: 0.65rem; letter-spacing: 3px; font-weight: 700; color: var(--gold); margin-bottom: 0.8rem; }
+        .af-section h2 { font-size: 2rem; font-weight: 700; color: var(--dark); margin-bottom: 0.6rem; }
+        .af-section > p { color: #777; font-size: 0.93rem; line-height: 1.7; max-width: 600px; margin-bottom: 3rem; }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        .step-card {
+            background: #fff;
+            border: 1px solid #eee;
+            padding: 2rem;
+            border-radius: 4px;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .step-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.08); transform: translateY(-4px); }
+        .step-num {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--gold);
+            opacity: 0.3;
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+        .step-card h3 { font-size: 1rem; font-weight: 700; color: var(--dark); margin-bottom: 0.5rem; }
+        .step-card p { font-size: 0.85rem; color: #777; line-height: 1.6; margin: 0; }
+
+        /* PLANES */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+        .plan-card {
+            border: 1px solid #eee;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #fff;
+            transition: box-shadow 0.2s;
+        }
+        .plan-card:hover { box-shadow: 0 16px 50px rgba(0,0,0,0.1); }
+        .plan-card.featured {
+            border-color: var(--gold);
+            box-shadow: 0 8px 40px rgba(183,152,96,0.15);
+        }
+        .plan-header {
+            padding: 2rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .plan-card.featured .plan-header { background: var(--dark); }
+        .plan-tag {
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+        .plan-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.3rem;
+        }
+        .plan-card.featured .plan-name { color: #fff; }
+        .plan-commission {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--gold);
+        }
+        .plan-commission span { font-size: 0.85rem; font-weight: 500; color: #aaa; }
+        .plan-body { padding: 2rem; }
+        .plan-features { list-style: none; padding: 0; margin: 0 0 1.5rem; }
+        .plan-features li {
+            font-size: 0.85rem;
+            color: #555;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f5f5f5;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .plan-features li::before { content: '✓'; color: var(--gold); font-weight: 700; }
+        .plan-btn {
+            display: block;
+            text-align: center;
+            padding: 0.85rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .plan-btn-outline {
+            border: 1px solid var(--dark);
+            color: var(--dark);
+        }
+        .plan-btn-outline:hover { background: var(--dark); color: #fff; }
+        .plan-btn-gold { background: var(--gold); color: #000; }
+        .plan-btn-gold:hover { background: var(--gold-hover); }
+
+        /* FAQ */
+        .af-faq { padding: 5rem 5%; background: var(--dark); }
+        .af-faq-inner { max-width: 700px; margin: 0 auto; }
+        .af-faq .af-section-label { color: var(--gold); }
+        .af-faq h2 { color: #fff; font-size: 2rem; margin-bottom: 2.5rem; }
+        .faq-item { border-bottom: 1px solid rgba(255,255,255,0.06); padding: 1.5rem 0; }
+        .faq-q { font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 0.7rem; }
+        .faq-a { font-size: 0.87rem; color: #777; line-height: 1.7; }
+
+        /* FOOTER */
+        .legal-footer {
+            background: #060606;
+            color: #555;
+            text-align: center;
+            padding: 2rem 5%;
+            font-size: 0.75rem;
+        }
+        .legal-footer a { color: var(--gold); text-decoration: none; margin: 0 0.8rem; }
+
+        @media (max-width: 768px) {
+            .af-stats      { grid-template-columns: 1fr 1fr; }
+            .steps-grid    { grid-template-columns: 1fr; }
+            .plans-grid    { grid-template-columns: 1fr; }
+            .af-hero h1    { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="legal-nav">
+        <a href="index.html" class="legal-nav-logo">CENTURY 21</a>
+        <a href="index.html" class="legal-nav-back">← VOLVER AL INICIO</a>
+    </nav>
+
+    <!-- Hero -->
+    <section class="af-hero">
+        <div class="af-hero-label">PROGRAMA DE AFILIADOS</div>
+        <h1>Genera ingresos con la red<br><span>inmobiliaria #1</span></h1>
+        <p>Únete al programa de afiliados de CENTURY 21 y gana comisiones por cada propiedad referida que se concrete.</p>
+        <a href="register.html" class="af-cta">UNIRME AHORA →</a>
+    </section>
+
+    <!-- Stats -->
+    <div class="af-stats">
+        <div>
+            <div class="af-stat-num">+2,400</div>
+            <div class="af-stat-label">AFILIADOS ACTIVOS</div>
+        </div>
+        <div>
+            <div class="af-stat-num">$18M</div>
+            <div class="af-stat-label">PAGADO EN COMISIONES</div>
+        </div>
+        <div>
+            <div class="af-stat-num">4.8%</div>
+            <div class="af-stat-label">COMISIÓN PROMEDIO</div>
+        </div>
+        <div>
+            <div class="af-stat-num">72h</div>
+            <div class="af-stat-label">PAGO TRAS CIERRE</div>
+        </div>
+    </div>
+
+    <!-- Cómo funciona -->
+    <section class="af-section">
+        <div class="af-section-label">PROCESO SIMPLE</div>
+        <h2>¿Cómo funciona?</h2>
+        <p>Tres pasos para comenzar a generar ingresos referiendo clientes a la plataforma inmobiliaria más innovadora del mercado.</p>
+
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-num">01</div>
+                <h3>Regístrate como afiliado</h3>
+                <p>Crea tu cuenta en CENTURY 21 y solicita acceso al panel de afiliados. El proceso toma menos de 5 minutos.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">02</div>
+                <h3>Comparte tu enlace único</h3>
+                <p>Obtén tu URL personalizada y compártela con personas interesadas en comprar, vender o rentar propiedades.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">03</div>
+                <h3>Cobra tu comisión</h3>
+                <p>Cada vez que un referido concretan una transacción, recibes tu comisión directamente en tu cuenta en un plazo de 72 horas.</p>
+            </div>
+        </div>
+
+        <!-- Planes -->
+        <div class="af-section-label">PLANES DE COMISIÓN</div>
+        <h2>Elige tu nivel</h2>
+        <p style="margin-bottom: 2rem;">Todos los afiliados comienzan en el nivel Plata. Tu nivel sube automáticamente según el volumen de referencias concretadas.</p>
+
+        <div class="plans-grid">
+            <div class="plan-card">
+                <div class="plan-header">
+                    <div class="plan-tag">NIVEL INICIAL</div>
+                    <div class="plan-name">Plata</div>
+                    <div class="plan-commission">3% <span>por cierre</span></div>
+                </div>
+                <div class="plan-body">
+                    <ul class="plan-features">
+                        <li>Enlace de referido personalizado</li>
+                        <li>Panel de seguimiento en tiempo real</li>
+                        <li>Soporte por correo electrónico</li>
+                        <li>Hasta 10 referencias activas</li>
+                    </ul>
+                    <a href="register.html" class="plan-btn plan-btn-outline">COMENZAR GRATIS</a>
+                </div>
+            </div>
+
+            <div class="plan-card featured">
+                <div class="plan-header">
+                    <div class="plan-tag">MÁS POPULAR</div>
+                    <div class="plan-name">Oro</div>
+                    <div class="plan-commission">5% <span>por cierre</span></div>
+                </div>
+                <div class="plan-body">
+                    <ul class="plan-features">
+                        <li>Todo lo del nivel Plata</li>
+                        <li>Referencias ilimitadas</li>
+                        <li>Soporte prioritario 24/7</li>
+                        <li>Dashboard con analytics avanzados</li>
+                        <li>Materiales de marketing exclusivos</li>
+                    </ul>
+                    <a href="register.html" class="plan-btn plan-btn-gold">QUIERO ESTE PLAN</a>
+                </div>
+            </div>
+
+            <div class="plan-card">
+                <div class="plan-header">
+                    <div class="plan-tag">NIVEL ELITE</div>
+                    <div class="plan-name">Platino</div>
+                    <div class="plan-commission">7% <span>por cierre</span></div>
+                </div>
+                <div class="plan-body">
+                    <ul class="plan-features">
+                        <li>Todo lo del nivel Oro</li>
+                        <li>Account manager dedicado</li>
+                        <li>Acceso anticipado a nuevos listings</li>
+                        <li>Comisión recurrente por clientes activos</li>
+                        <li>Invitación a eventos exclusivos C21</li>
+                    </ul>
+                    <a href="register.html" class="plan-btn plan-btn-outline">APLICAR AHORA</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="af-faq">
+        <div class="af-faq-inner">
+            <div class="af-section-label">PREGUNTAS FRECUENTES</div>
+            <h2>Todo lo que necesitas saber</h2>
+
+            <div class="faq-item">
+                <div class="faq-q">¿Hay algún costo para unirme al programa?</div>
+                <div class="faq-a">No. El programa de afiliados de CENTURY 21 es completamente gratuito. Solo necesitas crear una cuenta en la plataforma y solicitar acceso al panel de afiliados.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">¿Cuándo se pagan las comisiones?</div>
+                <div class="faq-a">Las comisiones se liberan dentro de las 72 horas siguientes al cierre formal de la transacción inmobiliaria, previa verificación por parte de nuestro equipo.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">¿Qué tipo de transacciones generan comisión?</div>
+                <div class="faq-a">Las comisiones se generan por la compraventa y arrendamiento de propiedades publicadas en la plataforma, siempre que el cliente haya ingresado mediante tu enlace de referido.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">¿Puedo ser afiliado si ya soy agente inmobiliario?</div>
+                <div class="faq-a">Sí. Los agentes certificados pueden participar en el programa de afiliados como canal adicional de ingresos, complementario a sus comisiones de venta habituales.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-q">¿Cómo subo de nivel?</div>
+                <div class="faq-a">El nivel se actualiza automáticamente cada trimestre según el volumen de transacciones concretadas. Plata: hasta 5 cierres / trimestre. Oro: de 6 a 20. Platino: más de 21.</div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="legal-footer">
+        <p>&copy; 2026 CENTURY 21. TODOS LOS DERECHOS RESERVADOS.</p>
+        <p style="margin-top:0.5rem;">
+            <a href="privacidad.html">Privacidad</a>
+            <a href="terminos.html">Términos</a>
+            <a href="afiliados.html">Afiliados</a>
+            <a href="index.html">Inicio</a>
+        </p>
+    </footer>
+
+</body>
+</html>

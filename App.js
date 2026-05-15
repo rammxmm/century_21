@@ -50,6 +50,54 @@ document.addEventListener('DOMContentLoaded', () => {
     const aiResultsContainer = document.getElementById('ai-results-container');
 
     let allProperties = [];
+    let viewTimer = null;
+    let currentViewedId = null;
+
+    // ==========================================
+    // MAPA SEMÁNTICO — lenguaje natural → tags
+    // ==========================================
+    const SEMANTIC_MAP = {
+        'metro':       ['céntrico', 'central'],
+        'tranquil':    ['tranquilo', 'arbolado', 'familiar'],
+        'luz':         ['iluminado', 'ventanales'],
+        'natural':     ['iluminado', 'jardín', 'parques', 'arbolado'],
+        'tarde':       ['iluminado', 'ventanales'],
+        'parque':      ['parques', 'jardín', 'arbolado'],
+        'familia':     ['familia', 'jardín', 'pet friendly', 'tranquilo'],
+        'niño':        ['familia', 'jardín', 'pet friendly'],
+        'mascota':     ['pet friendly', 'jardín'],
+        'lujo':        ['lujo', 'exclusivo', 'minimalista'],
+        'modern':      ['minimalista', 'domótica', 'inteligente'],
+        'inteligent':  ['domótica', 'inteligente'],
+        'terraza':     ['terraza', 'balcón', 'vista'],
+        'balcon':      ['balcón', 'terraza'],
+        'vista':       ['vista', 'penthouse', 'lujo'],
+        'trabajo':     ['coworking', 'estudio', 'céntrico'],
+        'nomada':      ['nómada', 'coworking', 'amueblado'],
+        'amueblad':    ['amueblado'],
+        'alberca':     ['alberca', 'lujo'],
+        'pool':        ['alberca', 'lujo'],
+        'sustentable': ['sustentable'],
+        'ecologic':    ['sustentable'],
+        'industrial':  ['industrial', 'loft'],
+        'loft':        ['loft', 'industrial'],
+        'colonial':    ['colonial'],
+        'seguridad':   ['seguridad', 'exclusivo'],
+        'privada':     ['exclusivo', 'seguridad'],
+        'joven':       ['joven', 'loft', 'céntrico'],
+        'pareja':      ['parejas', 'acogedor'],
+        'acogedor':    ['acogedor', 'parejas'],
+        'iluminacion': ['iluminado', 'ventanales'],
+        'exclusiv':    ['exclusivo', 'lujo', 'seguridad'],
+        'minimalista': ['minimalista'],
+        'domotica':    ['domótica', 'inteligente'],
+        'remodelad':   ['remodelado'],
+        'estudio':     ['estudio', 'coworking'],
+        'departament': ['departamento'],
+        'penthouse':   ['penthouse', 'lujo', 'vista'],
+        'amplio':      ['jardín', 'área'],
+        'cocina':      ['cocina abierta', 'integral'],
+    };
 
     // ==========================================
     // CARGAR PROPIEDADES
@@ -88,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Error al cargar propiedades:", error);
         }
     }
-    
+
     // Exponer para que account.js pueda llamarlo al resolver el Auth
     window.appLoadProperties = loadProperties;
 
@@ -217,7 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Inicia sesión para guardar favoritos.');
             return;
         }
-        
+
         if (!session.favoritos) session.favoritos = [];
         const index = session.favoritos.indexOf(id);
         if (index === -1) {
@@ -231,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
             el.style.fill = 'none';
             el.style.stroke = 'currentColor';
         }
-        
+
         accountApi.setSession(session);
         accountApi.applySession(); // Re-render stats and panel
     }
@@ -335,12 +383,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (loc && !propLoc.includes(loc)) return false;
             if (type && !propType.includes(type)) return false;
             if (propPrice < minPrice || propPrice > maxPrice) return false;
-            
+
             return true;
         });
 
         renderFullProperties(filtered);
-        
+
         // Hacer scroll a la sección de resultados
         allPropertiesSection.scrollIntoView({ behavior: 'smooth' });
     });
@@ -358,7 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         });
     }
-    
+
     // Exponer para que account.js pueda abrir el modal
     window.openDetailsModal = openDetailsModal;
 
@@ -400,18 +448,34 @@ document.addEventListener('DOMContentLoaded', () => {
                         window.location.href = 'login.html';
                         return;
                     }
+                    // Poblar el modal con datos de la propiedad
                     document.getElementById('visit-property-id').value = id;
                     document.getElementById('visit-property-title').textContent = prop.title;
+                    const imgEl = document.getElementById('visit-property-img');
+                    if (imgEl) imgEl.src = prop.image;
+                    const priceEl = document.getElementById('visit-property-price');
+                    if (priceEl) priceEl.textContent = prop.price;
+                    // Resetear selección previa
+                    document.querySelectorAll('.time-slot-btn').forEach(b => b.classList.remove('selected'));
+                    document.getElementById('visit-time').value = '';
+                    document.getElementById('visit-date').value = '';
+                    const confirmBtn = document.getElementById('btn-confirm-visit');
+                    if (confirmBtn) confirmBtn.disabled = true;
+                    // Mostrar modal
                     document.getElementById('visit-modal').classList.remove('hidden');
-                    detailsModal.classList.add('hidden'); // Ocultar el de detalles
+                    detailsModal.classList.add('hidden');
                 };
             }
         }
 
+        startViewTimer(id);
         detailsModal.classList.remove('hidden');
     }
 
-    closeDetailsModal?.addEventListener('click', () => detailsModal.classList.add('hidden'));
+    closeDetailsModal?.addEventListener('click', () => {
+        clearViewTimer();
+        detailsModal.classList.add('hidden');
+    });
 
     // ==========================================
     // MODAL DE BÚSQUEDA IA
@@ -432,27 +496,53 @@ document.addEventListener('DOMContentLoaded', () => {
         closeAiModalBtn?.addEventListener('click', () => aiModal.classList.add('hidden'));
     }
 
+    function normalize(str) {
+        return (str || '').toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+
     function performAISearch(query) {
         if (!query.trim()) return;
 
-        const normalizedQuery = query.toLowerCase();
+        const normQuery = normalize(query);
+        const words = normQuery.split(/\s+/).filter(w => w.length > 2);
+
+        // Expandir palabras con el mapa semántico
+        const expandedTags = new Set(words);
+        words.forEach(word => {
+            Object.keys(SEMANTIC_MAP).forEach(key => {
+                if (normalize(key).includes(word) || word.includes(normalize(key))) {
+                    SEMANTIC_MAP[key].forEach(tag => expandedTags.add(normalize(tag)));
+                }
+            });
+        });
 
         const results = allProperties.map(prop => {
-            let matchScore = 50;
-            const searchSpace = `${prop.title} ${prop.description} ${(prop.tags || []).join(' ')} ${prop.location}`.toLowerCase();
-
-            query.split(' ').forEach(word => {
-                if (word.length > 3 && searchSpace.includes(word)) matchScore += 15;
+            const searchSpace = normalize(
+                `${prop.title} ${prop.description} ${(prop.tags || []).join(' ')} ${prop.location} ${prop.type}`
+            );
+            let score = 0;
+            expandedTags.forEach(tag => {
+                if (tag.length > 2 && searchSpace.includes(tag)) score += 18;
             });
+            words.forEach(word => {
+                if (word.length > 3 && searchSpace.includes(word)) score += 10;
+            });
+            return { ...prop, matchPercent: Math.min(99, score) };
+        })
+        .filter(p => p.matchPercent > 0)
+        .sort((a, b) => b.matchPercent - a.matchPercent)
+        .slice(0, 4);
 
-            matchScore = Math.min(99, matchScore + Math.floor(Math.random() * 10));
-            return { ...prop, matchPercent: matchScore };
-        }).sort((a, b) => b.matchPercent - a.matchPercent).slice(0, 2);
+        // Si no hay resultados, mostrar los mejores con score base
+        const finalResults = results.length > 0
+            ? results
+            : allProperties.slice(0, 2).map(p => ({ ...p, matchPercent: 45 }));
 
-        renderAIResults(results);
+        renderAIResults(finalResults, query);
     }
 
-    function renderAIResults(results) {
+    function renderAIResults(results, query = '') {
         if (!aiResultsContainer) return;
         aiResultsContainer.innerHTML = '';
 
@@ -461,13 +551,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="match-card" data-id="${prop.id}">
                     <img src="${prop.image}" alt="${prop.title}" class="match-img">
                     <div class="match-info">
+                        <div class="match-percent-bar">
+                            <div class="match-percent-fill" style="width:${prop.matchPercent}%"></div>
+                        </div>
                         <h5>${prop.matchPercent}% COINCIDENCIA</h5>
                         <h4>${prop.title}</h4>
-                        <p>${(prop.tags || []).slice(0, 2).join(', ')}</p>
+                        <p class="match-location">📍 ${prop.location}</p>
+                        <p class="match-tags">${(prop.tags || []).slice(0, 3).join(' · ')}</p>
                     </div>
                 </div>
             `;
         });
+
+        // Botón guardar búsqueda (solo si hay sesión y query)
+        if (query.trim() && results.length > 0) {
+            const session = (window.Account || {}).getSession?.();
+            if (session) {
+                const alreadySaved = (session.busquedasGuardadas || []).includes(query);
+                aiResultsContainer.innerHTML += `
+                    <div class="save-search-bar" style="grid-column:span 2;">
+                        <span>¿Te gustaron los resultados?</span>
+                        <button id="btn-save-search" class="btn-gold btn-sm"
+                            onclick="window.Account.saveSearch('${query.replace(/'/g, "\\'")}')"
+                            ${alreadySaved ? 'disabled' : ''}>
+                            ${alreadySaved ? '✅ Guardada' : '🔖 Guardar búsqueda'}
+                        </button>
+                    </div>
+                `;
+            }
+        }
 
         attachCardListeners();
     }
@@ -478,7 +590,94 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ==========================================
+    // TIMER DE VISUALIZACIÓN (> 30 segundos)
+    // ==========================================
+    function startViewTimer(id) {
+        clearViewTimer();
+        currentViewedId = id;
+        viewTimer = setTimeout(() => recordView(id), 30000);
+    }
+
+    function clearViewTimer() {
+        if (viewTimer) { clearTimeout(viewTimer); viewTimer = null; }
+        currentViewedId = null;
+    }
+
+    async function recordView(id) {
+        const accountApi = window.Account || (typeof Account !== 'undefined' ? Account : null);
+        const session = accountApi ? accountApi.getSession() : null;
+        if (!session) return;
+        if (!session.historial) session.historial = [];
+        if (!session.historial.includes(id)) {
+            session.historial.push(id);
+            await accountApi.setSession(session);
+            console.log(`[IA] Propiedad ${id} registrada en historial (>30s)`);
+        }
+    }
+
+    // ==========================================
+    // MOTOR DE RECOMENDACIONES (content-based)
+    // ==========================================
+    function getRecommendations() {
+        const session = (window.Account || {}).getSession?.();
+        if (!session) return [];
+
+        const seenIds = new Set([
+            ...(session.favoritos || []),
+            ...(session.historial || [])
+        ]);
+        if (seenIds.size === 0) return [];
+
+        // Construir perfil de tags del usuario
+        const tagFreq = {};
+        seenIds.forEach(id => {
+            const prop = allProperties.find(p => p.id === id);
+            if (!prop) return;
+            (prop.tags || []).forEach(tag => {
+                const key = normalize(tag);
+                tagFreq[key] = (tagFreq[key] || 0) + 1;
+            });
+        });
+
+        const totalWeight = Object.values(tagFreq).reduce((a, b) => a + b, 0);
+        if (totalWeight === 0) return [];
+
+        return allProperties
+            .filter(p => !seenIds.has(p.id))
+            .map(prop => {
+                let score = 0;
+                (prop.tags || []).forEach(tag => {
+                    score += tagFreq[normalize(tag)] || 0;
+                });
+                const pct = Math.round((score / totalWeight) * 100);
+                return { ...prop, matchPercent: Math.min(98, pct > 0 ? 60 + pct : 0), rawScore: score };
+            })
+            .filter(p => p.rawScore > 0)
+            .sort((a, b) => b.rawScore - a.rawScore)
+            .slice(0, 4);
+    }
+    window.getRecommendations = getRecommendations;
+
+    // ==========================================
     // INICIALIZAR
     // ==========================================
+    // Habilitar botón confirmar cuando se seleccione fecha y hora
+    document.getElementById('visit-date')?.addEventListener('change', () => {
+        const time = document.getElementById('visit-time')?.value;
+        const confirmBtn = document.getElementById('btn-confirm-visit');
+        if (confirmBtn) confirmBtn.disabled = !time;
+    });
+
     loadProperties();
 });
+
+// Fuera del DOMContentLoaded para ser accesible desde onclick en el HTML
+window.selectTimeSlot = function(time, btn) {
+    document.querySelectorAll('.time-slot-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById('visit-time').value = time;
+    // Habilitar confirmar solo si también hay fecha
+    const date = document.getElementById('visit-date')?.value;
+    const confirmBtn = document.getElementById('btn-confirm-visit');
+    if (confirmBtn) confirmBtn.disabled = !date;
+};

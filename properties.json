@@ -11,7 +11,13 @@
         "area": 180,
         "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1000&auto=format&fit=crop",
         "description": "Exclusivo penthouse con vista panorámica, diseño minimalista, ideal para ejecutivos. Acabados de lujo, seguridad 24/7 y acceso directo al elevador.",
-        "tags": ["lujo", "vista", "seguridad", "exclusivo", "minimalista"]
+        "tags": [
+            "lujo",
+            "vista",
+            "seguridad",
+            "exclusivo",
+            "minimalista"
+        ]
     },
     {
         "id": 2,
@@ -25,7 +31,13 @@
         "area": 250,
         "image": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=1000&auto=format&fit=crop",
         "description": "Hermosa casa estilo colonial moderno, amplio jardín perfecto para niños y mascotas (pet friendly). Calle tranquila y arbolada.",
-        "tags": ["familia", "jardín", "pet friendly", "tranquilo", "colonial"]
+        "tags": [
+            "familia",
+            "jardín",
+            "pet friendly",
+            "tranquilo",
+            "colonial"
+        ]
     },
     {
         "id": 3,
@@ -39,7 +51,14 @@
         "area": 85,
         "image": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=1000&auto=format&fit=crop",
         "description": "Increíble loft estilo industrial, techos de doble altura, paredes de ladrillo expuesto y ventanales inmensos. Excelente iluminación natural. Cerca de parques y restaurantes.",
-        "tags": ["loft", "industrial", "joven", "iluminado", "céntrico", "parques"]
+        "tags": [
+            "loft",
+            "industrial",
+            "joven",
+            "iluminado",
+            "céntrico",
+            "parques"
+        ]
     },
     {
         "id": 4,
@@ -53,7 +72,14 @@
         "area": 400,
         "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=1000&auto=format&fit=crop",
         "description": "Espectacular residencia minimalista inteligente. Sistema de domótica completo, alberca climatizada, paneles solares y acabados de mármol. Sustentable y moderna.",
-        "tags": ["minimalista", "lujo", "inteligente", "domótica", "alberca", "sustentable"]
+        "tags": [
+            "minimalista",
+            "lujo",
+            "inteligente",
+            "domótica",
+            "alberca",
+            "sustentable"
+        ]
     },
     {
         "id": 5,
@@ -67,7 +93,13 @@
         "area": 75,
         "image": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1000&auto=format&fit=crop",
         "description": "Departamento acogedor e iluminado, recién remodelado. Excelente ubicación para familias pequeñas o parejas. Cuenta con balcón y cocina integral.",
-        "tags": ["acogedor", "remodelado", "balcón", "céntrico", "parejas"]
+        "tags": [
+            "acogedor",
+            "remodelado",
+            "balcón",
+            "céntrico",
+            "parejas"
+        ]
     },
     {
         "id": 6,
@@ -81,6 +113,12 @@
         "area": 50,
         "image": "https://images.unsplash.com/photo-1502672260266-1c1e5250ad11?q=80&w=1000&auto=format&fit=crop",
         "description": "Estudio amueblado y listo para habitar. Internet de alta velocidad incluido, área de coworking en el edificio. Ideal para nómadas digitales y estudiantes.",
-        "tags": ["estudio", "nómada", "amueblado", "coworking", "céntrico"]
+        "tags": [
+            "estudio",
+            "nómada",
+            "amueblado",
+            "coworking",
+            "céntrico"
+        ]
     }
 ]

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luxe Estate - Obras Maestras Arquitectónicas</title>
+    <title>CENTURY 21 - Obras Maestras Arquitectónicas</title>
     <meta name="description"
         content="Plataforma inmobiliaria premium impulsada por inteligencia artificial para encontrar tu hogar ideal.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -57,7 +57,7 @@
                         <option value="Lomas">Lomas de Chapultepec</option>
                         <option value="Condesa">Condesa</option>
                     </select>
-                    
+
                     <select id="filter-type" class="filter-select">
                         <option value="">Tipo de Propiedad</option>
                         <option value="casa">Casa</option>
@@ -125,15 +125,15 @@
     <!-- Pie de Página -->
     <footer class="footer-dark">
         <div class="footer-container">
-            <div class="footer-logo">LUXE ESTATE</div>
+            <div class="footer-logo">CENTURY 21</div>
             <div class="footer-links">
-                <a href="#">POLÍTICA DE PRIVACIDAD</a>
-                <a href="#">TÉRMINOS DE SERVICIO</a>
-                <a href="#">CONTACTO</a>
-                <a href="#">AFILIADOS</a>
+                <a href="privacidad.html">POLÍTICA DE PRIVACIDAD</a>
+                <a href="terminos.html">TÉRMINOS DE SERVICIO</a>
+                <a href="contacto.html">CONTACTO</a>
+                <a href="afiliados.html">AFILIADOS</a>
             </div>
             <div class="footer-copy">
-                &copy; 2024 LUXE ESTATE. EXCELENCIA ARQUITECTÓNICA.
+                &copy; 2026 CENTURY 21. EXCELENCIA ARQUITECTÓNICA.
             </div>
         </div>
     </footer>
@@ -144,7 +144,7 @@
             <button class="close-modal" id="close-ai-modal">&times;</button>
 
             <div class="ai-header">
-                <div class="logo-white">LUXE ESTATE</div>
+                <div class="logo-white">CENTURY 21</div>
                 <div class="nav-links-ai">
                     <span>COMPRAR</span>
                     <span>RENTAR</span>
@@ -224,49 +224,96 @@
         </div>
     </div>
 
-    <!-- Modal de Perfil de Usuario -->
-    <div id="profile-modal" class="ai-modal hidden">
-        <div class="ai-modal-content" style="max-width: 500px;">
-            <button class="close-modal" id="close-profile-modal">&times;</button>
-            <div class="ai-body">
-                <h2>Mi Perfil</h2>
-                <form id="profile-form" style="display:flex; flex-direction:column; gap:1rem; margin-top:1.5rem;">
-                    <div>
-                        <label style="color:#aaa; font-size:0.9rem;">Nombre Completo</label>
-                        <input type="text" id="profile-name" class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+
+    <!-- Modal de Perfil de Usuario (REDESIGNED) -->
+    <div id="profile-modal" class="modal-overlay hidden">
+        <div class="profile-modal-card">
+
+            <!-- Cerrar -->
+            <button class="profile-close-btn" id="close-profile-modal">&times;</button>
+
+            <!-- Header oscuro con avatar -->
+            <div class="profile-card-header">
+                <div class="profile-avatar-lg" id="profile-avatar-display">U</div>
+                <div class="profile-account-label" id="profile-account-label">CUENTA</div>
+            </div>
+
+            <!-- Cuerpo del formulario -->
+            <div class="profile-card-body">
+                <div class="profile-card-title">
+                    <h2>Mi Perfil</h2>
+                    <p>Actualiza tu información de contacto</p>
+                </div>
+
+                <form id="profile-form">
+                    <div class="pf-field">
+                        <label for="profile-name">NOMBRE COMPLETO</label>
+                        <input type="text" id="profile-name" placeholder="Tu nombre completo">
                     </div>
-                    <div>
-                        <label style="color:#aaa; font-size:0.9rem;">Correo Electrónico</label>
-                        <input type="email" id="profile-email" class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                    <div class="pf-field">
+                        <label for="profile-email">CORREO ELECTRÓNICO</label>
+                        <input type="email" id="profile-email" placeholder="tu@email.com" readonly>
                     </div>
-                    <div>
-                        <label style="color:#aaa; font-size:0.9rem;">Teléfono</label>
-                        <input type="tel" id="profile-phone" class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                    <div class="pf-field">
+                        <label for="profile-phone">TELÉFONO</label>
+                        <input type="tel" id="profile-phone" placeholder="+52 (55) 0000-0000">
                     </div>
-                    <button type="submit" class="btn-gold" style="width:100%; margin-top:1rem; padding:1rem;">Guardar Cambios</button>
+                    <button type="submit" class="btn-gold pf-submit">Guardar Cambios</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Modal para Agendar Visita -->
-    <div id="visit-modal" class="ai-modal hidden">
-        <div class="ai-modal-content" style="max-width: 400px;">
-            <button class="close-modal" id="close-visit-modal">&times;</button>
-            <div class="ai-body">
-                <h2>Agendar Visita</h2>
-                <p style="color:#aaa; font-size:0.9rem; margin-top:0.5rem;" id="visit-property-title">Selecciona el horario</p>
-                <form id="visit-form" style="display:flex; flex-direction:column; gap:1rem; margin-top:1.5rem;">
+
+    <!-- Modal para Agendar Visita (REDESIGNED) -->
+    <div id="visit-modal" class="modal-overlay hidden">
+        <div class="visit-modal-card">
+
+            <!-- Cerrar -->
+            <button class="visit-close-btn" id="close-visit-modal">&times;</button>
+
+            <!-- Lado izquierdo: imagen de la propiedad -->
+            <div class="visit-img-side">
+                <img id="visit-property-img" src="" alt="Propiedad">
+                <div class="visit-img-overlay">
+                    <div class="visit-img-badge">VISITA PRIVADA</div>
+                    <h3 id="visit-property-title">Propiedad</h3>
+                    <p id="visit-property-price"></p>
+                </div>
+            </div>
+
+            <!-- Lado derecho: formulario -->
+            <div class="visit-form-side">
+                <div class="visit-form-header">
+                    <div class="visit-step-label">🗓 RESERVA TU VISITA</div>
+                    <h2>¿Cuándo quieres verla?</h2>
+                    <p>Elige fecha y horario disponible.</p>
+                </div>
+
+                <form id="visit-form">
                     <input type="hidden" id="visit-property-id">
-                    <div>
-                        <label style="color:#aaa; font-size:0.9rem;">Fecha</label>
-                        <input type="date" id="visit-date" required class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+
+                    <div class="visit-field">
+                        <label for="visit-date">FECHA</label>
+                        <input type="date" id="visit-date" class="visit-date-input" required>
                     </div>
-                    <div>
-                        <label style="color:#aaa; font-size:0.9rem;">Hora</label>
-                        <input type="time" id="visit-time" required class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+
+                    <div class="visit-field">
+                        <label>HORARIO DISPONIBLE</label>
+                        <div class="time-slots-grid">
+                            <button type="button" class="time-slot-btn" data-time="09:00" onclick="selectTimeSlot('09:00', this)">9:00 AM</button>
+                            <button type="button" class="time-slot-btn" data-time="10:30" onclick="selectTimeSlot('10:30', this)">10:30 AM</button>
+                            <button type="button" class="time-slot-btn" data-time="12:00" onclick="selectTimeSlot('12:00', this)">12:00 PM</button>
+                            <button type="button" class="time-slot-btn" data-time="14:00" onclick="selectTimeSlot('14:00', this)">2:00 PM</button>
+                            <button type="button" class="time-slot-btn" data-time="16:00" onclick="selectTimeSlot('16:00', this)">4:00 PM</button>
+                            <button type="button" class="time-slot-btn" data-time="17:30" onclick="selectTimeSlot('17:30', this)">5:30 PM</button>
+                        </div>
+                        <input type="hidden" id="visit-time">
                     </div>
-                    <button type="submit" class="btn-gold" style="width:100%; margin-top:1rem; padding:1rem;">Confirmar Visita</button>
+
+                    <button type="submit" class="btn-visit-confirm" id="btn-confirm-visit" disabled>
+                        Confirmar Visita &rarr;
+                    </button>
                 </form>
             </div>
         </div>
@@ -281,19 +328,23 @@
                 <form id="publish-form" style="display:flex; flex-direction:column; gap:1rem; margin-top:1.5rem;">
                     <div>
                         <label style="color:#aaa; font-size:0.9rem;">Título</label>
-                        <input type="text" id="pub-title" required class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                        <input type="text" id="pub-title" required class="filter-select"
+                            style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
                     </div>
                     <div style="display:flex; gap:1rem;">
                         <div style="flex:1;">
                             <label style="color:#aaa; font-size:0.9rem;">Precio</label>
-                            <input type="text" id="pub-price" required placeholder="$0,000,000" class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                            <input type="text" id="pub-price" required placeholder="$0,000,000" class="filter-select"
+                                style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
                         </div>
                         <div style="flex:1;">
                             <label style="color:#aaa; font-size:0.9rem;">Ubicación</label>
-                            <input type="text" id="pub-location" required class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                            <input type="text" id="pub-location" required class="filter-select"
+                                style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
                         </div>
                     </div>
-                    <button type="submit" class="btn-gold" style="width:100%; margin-top:1rem; padding:1rem;">Publicar</button>
+                    <button type="submit" class="btn-gold"
+                        style="width:100%; margin-top:1rem; padding:1rem;">Publicar</button>
                 </form>
             </div>
         </div>
@@ -308,26 +359,30 @@
                 <form id="client-form" style="display:flex; flex-direction:column; gap:1rem; margin-top:1.5rem;">
                     <div>
                         <label style="color:#aaa; font-size:0.9rem;">Nombre del Cliente</label>
-                        <input type="text" id="client-name" required class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                        <input type="text" id="client-name" required class="filter-select"
+                            style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
                     </div>
                     <div style="display:flex; gap:1rem;">
                         <div style="flex:1;">
                             <label style="color:#aaa; font-size:0.9rem;">Tipo</label>
-                            <select id="client-type" class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                            <select id="client-type" class="filter-select"
+                                style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
                                 <option value="Comprador">Comprador</option>
                                 <option value="Vendedor">Vendedor</option>
                             </select>
                         </div>
                         <div style="flex:1;">
                             <label style="color:#aaa; font-size:0.9rem;">Estado</label>
-                            <select id="client-status" class="filter-select" style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                            <select id="client-status" class="filter-select"
+                                style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
                                 <option value="Activo">Activo</option>
                                 <option value="Buscando">Buscando</option>
                                 <option value="Negociando">Negociando</option>
                             </select>
                         </div>
                     </div>
-                    <button type="submit" class="btn-gold" style="width:100%; margin-top:1rem; padding:1rem;">Guardar Cliente</button>
+                    <button type="submit" class="btn-gold" style="width:100%; margin-top:1rem; padding:1rem;">Guardar
+                        Cliente</button>
                 </form>
             </div>
         </div>
