@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CENTURY 21 - Obras Maestras Arquitectónicas</title>
+    <title>CENTURY 21 -Donde comienzan nuevos sueños.</title>
     <meta name="description"
         content="Plataforma inmobiliaria premium impulsada por inteligencia artificial para encontrar tu hogar ideal.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -152,11 +152,12 @@
         </div>
     </footer>
 
-    <!-- Modal de Búsqueda Semántica con IA (Modo Oscuro) -->
+    <!-- Modal de Búsqueda Semántica con IA (REDISEÑADO) -->
     <div id="ai-modal" class="ai-modal hidden">
         <div class="ai-modal-content">
             <button class="close-modal" id="close-ai-modal">&times;</button>
 
+            <!-- Header -->
             <div class="ai-header">
                 <div class="logo-white">CENTURY 21</div>
                 <div class="nav-links-ai">
@@ -166,17 +167,39 @@
                 </div>
             </div>
 
+            <!-- Cuerpo -->
             <div class="ai-body">
-                <h2>Descubre lo Extraordinario</h2>
-                <p>Describe tu propiedad ideal. Nuestra búsqueda semántica impulsada por IA entiende matices, estilo de
-                    vida y preferencias arquitectónicas para encontrar tu combinación perfecta.</p>
 
+                <!-- Badge IA -->
+                <div class="ai-badge-label">
+                    <span class="ai-badge-dot"></span>
+                    BÚSQUEDA SEMÁNTICA · IMPULSADA POR IA
+                </div>
+
+                <h2>Describe tu hogar ideal</h2>
+                <p>Escribe cómo imaginas tu próximo hogar y nuestra IA encontrará las propiedades que mejor se adaptan a
+                    tu estilo de vida, en cualquier ciudad de México.</p>
+
+                <!-- Chips de ciudad rápidos -->
+                <div class="ai-city-chips">
+                    <span class="ai-city-chip" onclick="appendCityToSearch('CDMX')">📍 CDMX</span>
+                    <span class="ai-city-chip" onclick="appendCityToSearch('Monterrey')">📍 Monterrey</span>
+                    <span class="ai-city-chip" onclick="appendCityToSearch('Guadalajara')">📍 Guadalajara</span>
+                    <span class="ai-city-chip" onclick="appendCityToSearch('Cancún')">📍 Cancún</span>
+                    <span class="ai-city-chip" onclick="appendCityToSearch('Querétaro')">📍 Querétaro</span>
+                    <span class="ai-city-chip" onclick="appendCityToSearch('Mérida')">📍 Mérida</span>
+                    <span class="ai-city-chip" onclick="appendCityToSearch('Tijuana')">📍 Tijuana</span>
+                    <span class="ai-city-chip" onclick="appendCityToSearch('León')">📍 León</span>
+                </div>
+
+                <!-- Caja de búsqueda -->
                 <div class="ai-search-box">
                     <svg viewBox="0 0 24 24" width="20" height="20" stroke="#888" stroke-width="2" fill="none">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                    <input type="text" id="semantic-search" placeholder="Apartamento moderno en Polanco con terraza...">
+                    <input type="text" id="semantic-search"
+                        placeholder="Ej: departamento con terraza y luz natural en Monterrey…">
                     <button id="btn-search-ai" class="btn-arrow-gold">
                         <svg viewBox="0 0 24 24" width="20" height="20" stroke="#000" stroke-width="2" fill="none">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -185,19 +208,43 @@
                     </button>
                 </div>
 
-                <div class="semantic-matches">
-                    <div class="matches-header">COINCIDENCIAS SEMÁNTICAS</div>
-                    <div class="matches-grid" id="ai-results-container">
-                        <!-- Resultados de IA inyectados aquí -->
+                <!-- Sugerencias rápidas -->
+                <div class="ai-suggestions" id="ai-suggestions">
+                    <span class="ai-suggestion-label">BÚSQUEDAS POPULARES:</span>
+                    <button class="ai-suggestion-chip" onclick="runSuggestion(this)">Casa familiar con jardín en
+                        Querétaro</button>
+                    <button class="ai-suggestion-chip" onclick="runSuggestion(this)">Loft moderno cerca del metro en
+                        CDMX</button>
+                    <button class="ai-suggestion-chip" onclick="runSuggestion(this)">Departamento frente al mar en
+                        Cancún</button>
+                    <button class="ai-suggestion-chip" onclick="runSuggestion(this)">Penthouse de lujo con alberca en
+                        Guadalajara</button>
+                    <button class="ai-suggestion-chip" onclick="runSuggestion(this)">Villa colonial tranquila en
+                        Mérida</button>
+                </div>
+
+                <!-- Panel de resultados -->
+                <div class="semantic-matches" id="ai-results-panel" style="display:none;">
+                    <div class="matches-header">
+                        <span id="ai-matches-label">COINCIDENCIAS SEMÁNTICAS</span>
+                        <span class="matches-city-tag" id="ai-matches-city"></span>
                     </div>
+                    <div class="matches-grid" id="ai-results-container"></div>
                     <div class="matches-footer">
-                        <span>Presiona <kbd>Enter</kbd> para ver todas las coincidencias</span>
-                        <a href="#">VER TODAS &rarr;</a>
+                        <span>Presiona <kbd>Enter</kbd> para buscar</span>
+                        <div class="matches-footer-actions">
+                            <button class="btn-save-search-ai" id="btn-save-search" style="display:none;">
+                                🔖 Guardar búsqueda
+                            </button>
+                            <a href="#" id="ai-view-all-link">VER TODAS →</a>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
+
 
     <!-- Modal de Detalles de Propiedad -->
     <div id="property-details-modal" class="ai-modal hidden">
@@ -232,7 +279,7 @@
                     </div>
 
                     <!-- El texto del botón cambia según el tipo de cuenta -->
-                    <button class="btn-gold detail-action-btn">Contactar Agente</button>
+                    <button class="btn-gold detail-action-btn">🗓 Agendar Cita</button>
                 </div>
             </div>
         </div>
@@ -315,12 +362,18 @@
                     <div class="visit-field">
                         <label>HORARIO DISPONIBLE</label>
                         <div class="time-slots-grid">
-                            <button type="button" class="time-slot-btn" data-time="09:00" onclick="selectTimeSlot('09:00', this)">9:00 AM</button>
-                            <button type="button" class="time-slot-btn" data-time="10:30" onclick="selectTimeSlot('10:30', this)">10:30 AM</button>
-                            <button type="button" class="time-slot-btn" data-time="12:00" onclick="selectTimeSlot('12:00', this)">12:00 PM</button>
-                            <button type="button" class="time-slot-btn" data-time="14:00" onclick="selectTimeSlot('14:00', this)">2:00 PM</button>
-                            <button type="button" class="time-slot-btn" data-time="16:00" onclick="selectTimeSlot('16:00', this)">4:00 PM</button>
-                            <button type="button" class="time-slot-btn" data-time="17:30" onclick="selectTimeSlot('17:30', this)">5:30 PM</button>
+                            <button type="button" class="time-slot-btn" data-time="09:00"
+                                onclick="selectTimeSlot('09:00', this)">9:00 AM</button>
+                            <button type="button" class="time-slot-btn" data-time="10:30"
+                                onclick="selectTimeSlot('10:30', this)">10:30 AM</button>
+                            <button type="button" class="time-slot-btn" data-time="12:00"
+                                onclick="selectTimeSlot('12:00', this)">12:00 PM</button>
+                            <button type="button" class="time-slot-btn" data-time="14:00"
+                                onclick="selectTimeSlot('14:00', this)">2:00 PM</button>
+                            <button type="button" class="time-slot-btn" data-time="16:00"
+                                onclick="selectTimeSlot('16:00', this)">4:00 PM</button>
+                            <button type="button" class="time-slot-btn" data-time="17:30"
+                                onclick="selectTimeSlot('17:30', this)">5:30 PM</button>
                         </div>
                         <input type="hidden" id="visit-time">
                     </div>

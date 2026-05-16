@@ -223,7 +223,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>` : ''}
                 </div>
                 <div class="card-info-small">
-                    <h4>${prop.price}</h4>
+                    <div class="card-price-row">
+                        <h4>${prop.price}</h4>
+                        <svg class="heart-icon heart-icon-sm" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"
+                             onclick="event.stopPropagation(); toggleFavorito(this, ${prop.id})">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                    </div>
                     <p>${prop.title}</p>
                     ${renderInversionistaExtra(prop, true)}
                     <div class="card-amenities-small">
@@ -315,34 +321,68 @@ document.addEventListener('DOMContentLoaded', () => {
         renderFullProperties(filteredProperties);
     }
 
+    // Mapa de propiedades simuladas para poder abrirlas desde click
+    const _simPropsMap = {};
+
     function renderFullProperties(properties) {
         fullPropertiesGrid.innerHTML = '';
         const isAgente = document.body.classList.contains('cuenta-agente');
 
         properties.forEach(prop => {
+            const isSim = prop.isSimulated;
+            // Guardar simuladas para poder abrirlas por ID
+            if (isSim) _simPropsMap[String(prop.id)] = prop;
+
+            const simBadge = isSim
+                ? `<div class="badge-sim-ai">✦ IA</div>`
+                : `<div class="badge-${prop.status === 'buy' ? 'gold' : 'black'}">${prop.status === 'buy' ? 'EN VENTA' : 'EN RENTA'}</div>`;
+
             fullPropertiesGrid.innerHTML += `
-                <div class="property-card-small" data-id="${prop.id}" style="cursor:pointer">
+                <div class="property-card-small" data-id="${prop.id}" data-sim="${isSim ? '1' : '0'}" style="cursor:pointer">
                     <div class="card-img-small">
-                        <div class="badge-${prop.status === 'buy' ? 'gold' : 'black'}">${prop.status === 'buy' ? 'EN VENTA' : 'EN RENTA'}</div>
+                        ${simBadge}
                         <img src="${prop.image}" alt="${prop.title}">
-                        ${isAgente ? `<div class="agente-overlay-btns agente-overlay-sm">
+                        ${isAgente && !isSim ? `<div class="agente-overlay-btns agente-overlay-sm">
                             <button class="btn-agente-card btn-agente-sm" onclick="event.stopPropagation();alert('Editando...')">✏</button>
                             <button class="btn-agente-card btn-agente-sm" onclick="event.stopPropagation();alert('Interesados...')">👥</button>
                         </div>` : ''}
                     </div>
                     <div class="card-info-small">
-                        <h4>${prop.price}</h4>
+                        <div class="card-price-row">
+                            <h4>${prop.price}</h4>
+                            ${!isSim ? `<svg class="heart-icon heart-icon-sm" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"
+                                 onclick="event.stopPropagation(); toggleFavorito(this, ${prop.id})">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>` : ''}
+                        </div>
                         <p>${prop.title}</p>
-                        ${renderInversionistaExtra(prop, true)}
+                        ${!isSim ? renderInversionistaExtra(prop, true) : ''}
                         <div class="card-amenities-small">
                             <span>${prop.bedrooms} CAMAS</span> • <span>${prop.bathrooms} BAÑOS</span>
+                            ${prop.area ? ` • <span>${prop.area} m²</span>` : ''}
                         </div>
+                        ${isSim ? `<p class="sim-location-tag">📍 ${prop.location}</p>` : ''}
                     </div>
                 </div>
             `;
         });
 
-        attachCardListeners();
+        // Listeners: real → openDetailsModal, simulada → showSimulatedDetail
+        fullPropertiesGrid.querySelectorAll('.property-card-small').forEach(card => {
+            card.onclick = () => {
+                const id  = card.dataset.id;
+                const sim = card.dataset.sim === '1';
+                if (sim) {
+                    const prop = _simPropsMap[id];
+                    if (prop) {
+                        window._setOpenedFromAI?.(false); // venimos de la sección normal, no del modal IA
+                        showSimulatedDetail(prop);
+                    }
+                } else {
+                    openDetailsModal(Number(id));
+                }
+            };
+        });
     }
 
     function showFeaturedSection() {
@@ -363,18 +403,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Lógica de Filtros Avanzados
     btnApplyFilters?.addEventListener('click', () => {
-        const loc = filterLocation?.value.toLowerCase();
-        const type = filterType?.value.toLowerCase();
-        const minPrice = parseFloat(filterPriceMin?.value) || 0;
-        const maxPrice = parseFloat(filterPriceMax?.value) || Infinity;
+        const locValue  = filterLocation?.value  || '';
+        const typeValue = filterType?.value      || '';
+        const minPrice  = parseFloat(filterPriceMin?.value) || 0;
+        const maxPrice  = parseFloat(filterPriceMax?.value) || Infinity;
 
-        // Ocultar sección destacada y mostrar cuadrícula de todas las propiedades
+        const loc  = locValue.toLowerCase();
+        const type = typeValue.toLowerCase();
+
+        // Ocultar destacadas y mostrar sección de resultados
         featuredSection.style.display = 'none';
         allPropertiesSection.classList.remove('hidden');
-        propertiesSectionTitle.textContent = "RESULTADOS DE BÚSQUEDA";
+        propertiesSectionTitle.textContent = 'RESULTADOS DE BÚSQUEDA';
         [btnBuy, btnRent, btnExplore].forEach(btn => btn?.classList.remove('active'));
 
-        // Alias de ubicaciones: valor del select → variantes que puede tener prop.location
+        // --- Alias de ubicaciones ---
         const LOCATION_ALIASES = {
             'cdmx': ['cdmx', 'ciudad de méxico', 'ciudad de mexico'],
             'monterrey': ['monterrey'],
@@ -396,25 +439,54 @@ document.addEventListener('DOMContentLoaded', () => {
             'oaxaca': ['oaxaca'],
         };
 
-        const filtered = allProperties.filter(prop => {
-            const propLoc  = (prop.location || '').toLowerCase();
-            const propType = (prop.type || '').toLowerCase();
+        // --- Filtrar propiedades reales del catálogo ---
+        const realMatches = allProperties.filter(prop => {
+            const propLoc   = (prop.location || '').toLowerCase();
+            const propType  = (prop.type     || '').toLowerCase();
             const propPrice = parseFloat((prop.price || '').replace(/[^0-9.]/g, '')) || 0;
 
             if (loc) {
-                const aliases = LOCATION_ALIASES[loc] || [loc];
+                const aliases  = LOCATION_ALIASES[loc] || [loc];
                 const locMatch = aliases.some(alias => propLoc.includes(alias));
                 if (!locMatch) return false;
             }
             if (type && !propType.includes(type)) return false;
             if (propPrice < minPrice || propPrice > maxPrice) return false;
-
             return true;
         });
 
-        renderFullProperties(filtered);
+        // --- Generar propiedades simuladas con los mismos filtros ---
+        // Construir query en lenguaje natural a partir de los selects
+        const cityLabel  = filterLocation?.options[filterLocation.selectedIndex]?.text || locValue;
+        const typeLabel  = typeValue || 'propiedad';
+        const priceLabel = minPrice > 0 ? `precio entre $${minPrice.toLocaleString('es-MX')} y $${maxPrice === Infinity ? '∞' : maxPrice.toLocaleString('es-MX')} MXN` : '';
+        const queryStr   = [typeLabel, cityLabel ? `en ${cityLabel}` : '', priceLabel].filter(Boolean).join(' ');
 
-        // Hacer scroll a la sección de resultados
+        let simulated = generateSimulatedProperties(queryStr);
+
+        // Filtrar simuladas por precio (si hay límites)
+        simulated = simulated.filter(prop => {
+            const propPrice = parseFloat((prop.price || '').replace(/[^0-9.]/g, '')) || 0;
+            if (minPrice > 0 && propPrice < minPrice) return false;
+            if (maxPrice < Infinity && propPrice > maxPrice) return false;
+            return true;
+        });
+
+        // Ajustar la cantidad de simuladas: si ya hay reales, agregar solo 4 sim; si no hay, agregar 6
+        const simCount = realMatches.length > 0 ? 4 : 6;
+        const combined = [...realMatches, ...simulated.slice(0, simCount)];
+
+        if (combined.length === 0) {
+            fullPropertiesGrid.innerHTML = `
+                <div style="grid-column:1/-1;text-align:center;padding:3rem;color:#aaa;">
+                    <p style="font-size:1.1rem;">No encontramos propiedades con esos filtros.</p>
+                    <p style="font-size:0.85rem;margin-top:0.5rem;">Intenta cambiar la ciudad o el rango de precio.</p>
+                </div>`;
+            allPropertiesSection.scrollIntoView({ behavior: 'smooth' });
+            return;
+        }
+
+        renderFullProperties(combined);
         allPropertiesSection.scrollIntoView({ behavior: 'smooth' });
     });
 
@@ -466,10 +538,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 actionBtn.textContent = 'Editar Publicación';
                 actionBtn.onclick = () => alert('Editando publicación...');
             } else {
-                actionBtn.textContent = '🗓 Agendar Visita';
+                actionBtn.textContent = '🗓 Agendar Cita';
                 actionBtn.onclick = () => {
                     if (!session) {
-                        alert('Por favor, inicia sesión para agendar una visita.');
+                        alert('Por favor, inicia sesión para agendar una cita.');
                         window.location.href = 'login.html';
                         return;
                     }
@@ -497,10 +569,21 @@ document.addEventListener('DOMContentLoaded', () => {
         detailsModal.classList.remove('hidden');
     }
 
+    // Flag: se abrió el detalle desde el modal de IA?
+    let _openedFromAI = false;
+
     closeDetailsModal?.addEventListener('click', () => {
         clearViewTimer();
         detailsModal.classList.add('hidden');
+        // Si el detalle se abrió desde la búsqueda IA, regresa a ella
+        if (_openedFromAI) {
+            _openedFromAI = false;
+            aiModal?.classList.remove('hidden');
+        }
     });
+
+    // Exportar el flag para que showSimulatedDetail pueda activarlo
+    window._setOpenedFromAI = (val) => { _openedFromAI = val; };
 
     // ==========================================
     // MODAL DE BÚSQUEDA IA
@@ -526,13 +609,233 @@ document.addEventListener('DOMContentLoaded', () => {
             .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     }
 
+    // ==========================================
+    // GENERADOR DE PROPIEDADES SIMULADAS
+    // ==========================================
+    function generateSimulatedProperties(query) {
+        const q = normalize(query);
+
+        // --- Ciudades con colonias y multiplicador de precio ---
+        const CITY_DATA = {
+            'cdmx':           { name: 'CDMX',        neighborhoods: ['Polanco','Condesa','Roma Norte','Santa Fe','Lomas de Chapultepec','Del Valle','Narvarte','Interlomas'], m: 1.25 },
+            'ciudad de mexic':{ name: 'CDMX',        neighborhoods: ['Polanco','Condesa','Roma Norte','Santa Fe','Lomas de Chapultepec','Del Valle'], m: 1.25 },
+            'monterrey':      { name: 'Monterrey',   neighborhoods: ['San Pedro','Cumbres','Valle','Zona Tec','Contry','Cintermex','Chipinque'], m: 1.05 },
+            'guadalajara':    { name: 'Guadalajara', neighborhoods: ['Zapopan','Chapalita','Puerta de Hierro','Andares','Providencia','Tlaquepaque'], m: 0.95 },
+            'cancun':         { name: 'Cancún',      neighborhoods: ['Zona Hotelera','Puerto Cancún','Pok-Ta-Pok','El Naranjal','SM 35'], m: 1.15 },
+            'queretaro':      { name: 'Querétaro',   neighborhoods: ['Juriquilla','El Campanario','Zibatá','Centro Histórico','Américas'], m: 0.88 },
+            'merida':         { name: 'Mérida',      neighborhoods: ['Altabrisa','Norte','Santa Gertrudis','Montejo','Itzimná'], m: 0.82 },
+            'tijuana':        { name: 'Tijuana',     neighborhoods: ['Zona Río','Playas de Tijuana','Otay','Las Lomas','Cañadas'], m: 0.90 },
+            'puebla':         { name: 'Puebla',      neighborhoods: ['Angelópolis','Lomas de Angelópolis','Centro','San Andrés Cholula'], m: 0.82 },
+            'leon':           { name: 'León',        neighborhoods: ['Campestre','La Cañada','Jardines del Moral','Lomas del Campestre'], m: 0.85 },
+            'oaxaca':         { name: 'Oaxaca',      neighborhoods: ['Jalatlaco','San Felipe del Agua','Centro Histórico','Reforma'], m: 0.78 },
+            'veracruz':       { name: 'Veracruz',    neighborhoods: ['Boca del Río','Costa de Oro','Fracc. Geranios','Puerto'], m: 0.72 },
+        };
+
+        let city = CITY_DATA['cdmx']; // default
+        for (const [key, val] of Object.entries(CITY_DATA)) {
+            if (q.includes(key)) { city = val; break; }
+        }
+
+        // --- Tipo de propiedad ---
+        let pType = 'Departamento';
+        if      (q.includes('casa') || q.includes('chalet'))         pType = 'Casa';
+        else if (q.includes('penthouse') || q.includes('atico'))      pType = 'Penthouse';
+        else if (q.includes('villa'))                                  pType = 'Villa';
+        else if (q.includes('loft'))                                   pType = 'Loft';
+        else if (q.includes('estudio'))                                pType = 'Estudio';
+
+        // --- Features detectadas ---
+        const f = {
+            lujo:     q.includes('lujo') || q.includes('exclusiv') || q.includes('premium'),
+            moderno:  q.includes('modern') || q.includes('contemporan') || q.includes('minimalista'),
+            colonial: q.includes('colonial') || q.includes('historic') || q.includes('tradicional'),
+            alberca:  q.includes('alberca') || q.includes('piscina') || q.includes('pool'),
+            jardin:   q.includes('jardin') || q.includes('garden') || q.includes('patio'),
+            terraza:  q.includes('terraza') || q.includes('balcon') || q.includes('rooftop'),
+            luz:      q.includes('luz') || q.includes('iluminad') || q.includes('ventanal'),
+            familiar: q.includes('famil') || q.includes('nino') || q.includes('hijo'),
+            pet:      q.includes('mascota') || q.includes('perro') || q.includes('pet'),
+            centrico: q.includes('metro') || q.includes('centrico') || q.includes('transport'),
+            tranquil: q.includes('tranquil') || q.includes('silencio') || q.includes('arbolad'),
+            nomada:   q.includes('nomada') || q.includes('remoto') || q.includes('coworking'),
+        };
+        const isRent = q.includes('rent') || q.includes('alquil') || q.includes('arriend') || q.includes('/mes');
+
+        // --- Pool de imágenes según tipo y estilo ---
+        const IMG = {
+            lujo: [
+                'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1200&auto=format&fit=crop',
+            ],
+            casa: [
+                'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1598228723793-52759bba239c?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1449844908441-8829872d2607?q=80&w=1200&auto=format&fit=crop',
+            ],
+            departamento: [
+                'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1502672260266-1c1e5250ad11?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1567767292278-a4f21aa2d36e?q=80&w=1200&auto=format&fit=crop',
+            ],
+            loft: [
+                'https://images.unsplash.com/photo-1536376517310-b40a49e74f5c?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=1200&auto=format&fit=crop',
+            ],
+            colonial: [
+                'https://images.unsplash.com/photo-1599427303058-f04cbcf4756f?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1596436889106-be35e843f974?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?q=80&w=1200&auto=format&fit=crop',
+            ],
+            playa: [
+                'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=1200&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?q=80&w=1200&auto=format&fit=crop',
+            ],
+        };
+
+        // Elegir pool de imágenes
+        let imgPool = IMG.departamento;
+        if (f.lujo || pType === 'Penthouse' || pType === 'Villa') imgPool = IMG.lujo;
+        else if (pType === 'Casa')          imgPool = IMG.casa;
+        else if (pType === 'Loft' || pType === 'Estudio') imgPool = IMG.loft;
+        else if (f.colonial)                imgPool = IMG.colonial;
+        else if (normalize(city.name).includes('cancun') || normalize(city.name).includes('veracruz')) imgPool = IMG.playa;
+
+        // --- Utilidades ---
+        const rand  = arr => arr[Math.floor(Math.random() * arr.length)];
+        const rInt  = (min, max) => min + Math.floor(Math.random() * (max - min + 1));
+        const fmtMX = n => '$' + Math.round(n).toLocaleString('es-MX') + ' MXN';
+
+        // --- Tamaños / cuartos según tipo ---
+        const SIZES = {
+            'Departamento': { beds:[2,3],   baths:[2,2.5],  area:[80,150]  },
+            'Casa':         { beds:[3,4,5], baths:[3,4],    area:[180,380] },
+            'Penthouse':    { beds:[3,4],   baths:[3,4],    area:[200,320] },
+            'Villa':        { beds:[4,5,6], baths:[4,5],    area:[350,700] },
+            'Loft':         { beds:[1],     baths:[1,1.5],  area:[50,95]   },
+            'Estudio':      { beds:[1],     baths:[1],      area:[35,65]   },
+        };
+        const sz = SIZES[pType] || SIZES['Departamento'];
+
+        // --- Precios base ---
+        const BASE = {
+            'Departamento': { buy:2_800_000, rent:18_000 },
+            'Casa':         { buy:4_800_000, rent:35_000 },
+            'Penthouse':    { buy:6_500_000, rent:58_000 },
+            'Villa':        { buy:9_000_000, rent:80_000 },
+            'Loft':         { buy:2_200_000, rent:15_000 },
+            'Estudio':      { buy:1_500_000, rent:11_000 },
+        };
+        const baseP = BASE[pType] || BASE['Departamento'];
+        const luxMult = f.lujo ? 1.55 : 1;
+
+        // --- Adjetivos y descriptores ---
+        const ADJS = f.lujo    ? ['Exclusivo','Premium','De Lujo','Elite','Espectacular']
+                   : f.moderno  ? ['Moderno','Contemporáneo','Minimalista','Vanguardista']
+                   : f.colonial ? ['Colonial','Clásico','Histórico','Patrimonial']
+                   : f.tranquil ? ['Acogedor','Tranquilo','Privado','Sereno']
+                   :              ['Luminoso','Elegante','Cómodo','Sofisticado'];
+
+        // --- Tags ---
+        const tags = [];
+        if (f.lujo)     tags.push('lujo','exclusivo');
+        if (f.moderno)  tags.push('moderno','minimalista');
+        if (f.colonial) tags.push('colonial');
+        if (f.alberca)  tags.push('alberca');
+        if (f.jardin)   tags.push('jardín');
+        if (f.terraza)  tags.push('terraza');
+        if (f.luz)      tags.push('iluminado','ventanales');
+        if (f.familiar) tags.push('familia','pet friendly');
+        if (f.pet)      tags.push('pet friendly');
+        if (f.centrico) tags.push('céntrico');
+        if (f.tranquil) tags.push('tranquilo','arbolado');
+        if (f.nomada)   tags.push('amueblado','coworking');
+        if (!tags.length) tags.push('moderno','iluminado');
+
+        // --- Generar 4 propiedades ---
+        const results = [];
+        const usedNeighborhoods = new Set();
+        const usedImages = new Set();
+
+        for (let i = 0; i < 4; i++) {
+            // Colonia única
+            const available = city.neighborhoods.filter(n => !usedNeighborhoods.has(n));
+            const hood = available.length ? rand(available) : rand(city.neighborhoods);
+            usedNeighborhoods.add(hood);
+
+            // Imagen única dentro del pool
+            const availImgs = imgPool.filter(im => !usedImages.has(im));
+            const img = availImgs.length ? rand(availImgs) : rand(imgPool);
+            usedImages.add(img);
+
+            const adj   = rand(ADJS);
+            const beds  = rand(sz.beds);
+            const baths = rand(sz.baths);
+            const area  = rInt(sz.area[0], sz.area[1]);
+            const variance = 0.88 + Math.random() * 0.24;
+            const rawP  = baseP[isRent ? 'rent' : 'buy'] * city.m * luxMult * variance;
+            const price = isRent ? `${fmtMX(rawP)} / mes` : fmtMX(rawP);
+            const matchPercent = Math.max(72, 98 - i * 6 - rInt(0, 4));
+
+            // Descripción dinámica
+            const featurePhrases = [
+                f.alberca  ? 'alberca privada'  : null,
+                f.jardin   ? 'jardín amplio'    : null,
+                f.terraza  ? 'terraza panorámica': null,
+                f.luz      ? 'excepcional iluminación natural' : null,
+                f.centrico ? 'acceso inmediato al transporte'  : null,
+                f.tranquil ? 'calle tranquila y arbolada'      : null,
+                f.nomada   ? 'amueblado y con coworking'       : null,
+                f.pet      ? 'pet friendly'                    : null,
+            ].filter(Boolean);
+            const featStr = featurePhrases.length
+                ? featurePhrases.slice(0, 2).join(', ') + '. '
+                : '';
+            const descs = [
+                `${adj} ${pType.toLowerCase()} en ${hood}, ${city.name}. ${featStr}Acabados de primer nivel y diseño ${f.moderno ? 'contemporáneo' : f.colonial ? 'colonial restaurado' : 'sofisticado'}. Seguridad 24/7.`,
+                `Impresionante ${pType.toLowerCase()} ${adj.toLowerCase()} en la zona de ${hood}. ${featStr}Ideal para ${f.familiar ? 'familias' : f.nomada ? 'nómadas digitales' : 'profesionales exigentes'}. Amenidades completas.`,
+                `${pType} ${adj.toLowerCase()} con ${area} m² en ${hood}, ${city.name}. ${featStr}Diseño ${f.lujo ? 'de lujo con materiales importados' : 'funcional y moderno'}. Lista para habitar.`,
+                `Exclusiva oportunidad en ${hood}: ${pType.toLowerCase()} ${adj.toLowerCase()} con ${beds} recámara${beds > 1 ? 's' : ''} y ${area} m². ${featStr}Ubicación privilegiada en ${city.name}.`,
+            ];
+
+            results.push({
+                id: `sim_${Date.now()}_${i}`,
+                title: `${adj} ${pType} en ${hood}`,
+                type:  pType,
+                price,
+                status:    isRent ? 'rent' : 'buy',
+                location:  `${hood}, ${city.name}`,
+                bedrooms:  beds,
+                bathrooms: baths,
+                area,
+                image:     img,
+                description: descs[i],
+                tags:      [...tags],
+                matchPercent,
+                isSimulated: true,
+            });
+        }
+        return results;
+    }
+
+    // ==========================================
+    // BÚSQUEDA SEMÁNTICA (mejorada con simulación)
+    // ==========================================
     function performAISearch(query) {
         if (!query.trim()) return;
 
         const normQuery = normalize(query);
         const words = normQuery.split(/\s+/).filter(w => w.length > 2);
 
-        // Expandir palabras con el mapa semántico
+        // Expandir con mapa semántico
         const expandedTags = new Set(words);
         words.forEach(word => {
             Object.keys(SEMANTIC_MAP).forEach(key => {
@@ -542,29 +845,26 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        const results = allProperties.map(prop => {
+        // Buscar coincidencias reales del catálogo
+        const realMatches = allProperties.map(prop => {
             const searchSpace = normalize(
-                `${prop.title} ${prop.description} ${(prop.tags || []).join(' ')} ${prop.location} ${prop.type}`
+                `${prop.title} ${prop.description} ${(prop.tags||[]).join(' ')} ${prop.location} ${prop.type}`
             );
             let score = 0;
-            expandedTags.forEach(tag => {
-                if (tag.length > 2 && searchSpace.includes(tag)) score += 18;
-            });
-            words.forEach(word => {
-                if (word.length > 3 && searchSpace.includes(word)) score += 10;
-            });
-            return { ...prop, matchPercent: Math.min(99, score) };
+            expandedTags.forEach(tag => { if (tag.length > 2 && searchSpace.includes(tag)) score += 18; });
+            words.forEach(word    => { if (word.length > 3 && searchSpace.includes(word))  score += 10; });
+            return { ...prop, matchPercent: Math.min(95, score) };
         })
         .filter(p => p.matchPercent > 0)
         .sort((a, b) => b.matchPercent - a.matchPercent)
-        .slice(0, 4);
+        .slice(0, 2);
 
-        // Si no hay resultados, mostrar los mejores con score base
-        const finalResults = results.length > 0
-            ? results
-            : allProperties.slice(0, 2).map(p => ({ ...p, matchPercent: 45 }));
+        // Generar propiedades simuladas por IA
+        const simulated = generateSimulatedProperties(query);
 
-        renderAIResults(finalResults, query);
+        // Combinar: simuladas primero (más relevantes), luego reales del catálogo
+        const combined = [...simulated, ...realMatches];
+        renderAIResults(combined, query);
     }
 
     function renderAIResults(results, query = '') {
@@ -572,9 +872,16 @@ document.addEventListener('DOMContentLoaded', () => {
         aiResultsContainer.innerHTML = '';
 
         results.forEach(prop => {
+            const simBadge = prop.isSimulated
+                ? `<span class="sim-badge">✦ GENERADO POR IA</span>`
+                : `<span class="sim-badge sim-badge-real">✓ CATÁLOGO</span>`;
+
             aiResultsContainer.innerHTML += `
                 <div class="match-card" data-id="${prop.id}">
-                    <img src="${prop.image}" alt="${prop.title}" class="match-img">
+                    <div class="match-img-wrap">
+                        <img src="${prop.image}" alt="${prop.title}" class="match-img">
+                        ${simBadge}
+                    </div>
                     <div class="match-info">
                         <div class="match-percent-bar">
                             <div class="match-percent-fill" style="width:${prop.matchPercent}%"></div>
@@ -582,31 +889,79 @@ document.addEventListener('DOMContentLoaded', () => {
                         <h5>${prop.matchPercent}% COINCIDENCIA</h5>
                         <h4>${prop.title}</h4>
                         <p class="match-location">📍 ${prop.location}</p>
+                        <p class="match-price-ai">${prop.price}</p>
                         <p class="match-tags">${(prop.tags || []).slice(0, 3).join(' · ')}</p>
                     </div>
                 </div>
             `;
         });
 
-        // Botón guardar búsqueda (solo si hay sesión y query)
-        if (query.trim() && results.length > 0) {
+        // Panel visible + ocultar sugerencias
+        const panel       = document.getElementById('ai-results-panel');
+        const suggestions = document.getElementById('ai-suggestions');
+        if (panel)       panel.style.display = 'block';
+        if (suggestions) suggestions.style.display = 'none';
+
+        // Badge ciudad detectada
+        const cityTag = document.getElementById('ai-matches-city');
+        if (cityTag) {
+            const CITIES = ['CDMX','Monterrey','Guadalajara','Cancún','Querétaro','Mérida','Tijuana','León','Puebla','Oaxaca','Veracruz'];
+            const detected = CITIES.find(c => query.toLowerCase().includes(c.toLowerCase()));
+            cityTag.textContent = detected ? `📍 ${detected}` : '';
+        }
+
+        // Botón guardar búsqueda
+        const saveBtn = document.getElementById('btn-save-search');
+        if (saveBtn && query.trim() && results.length > 0) {
             const session = (window.Account || {}).getSession?.();
             if (session) {
                 const alreadySaved = (session.busquedasGuardadas || []).includes(query);
-                aiResultsContainer.innerHTML += `
-                    <div class="save-search-bar" style="grid-column:span 2;">
-                        <span>¿Te gustaron los resultados?</span>
-                        <button id="btn-save-search" class="btn-gold btn-sm"
-                            onclick="window.Account.saveSearch('${query.replace(/'/g, "\\'")}')"
-                            ${alreadySaved ? 'disabled' : ''}>
-                            ${alreadySaved ? '✅ Guardada' : '🔖 Guardar búsqueda'}
-                        </button>
-                    </div>
-                `;
+                saveBtn.style.display = 'inline-flex';
+                saveBtn.textContent   = alreadySaved ? '✅ Guardada' : '🔖 Guardar búsqueda';
+                saveBtn.disabled      = alreadySaved;
+                saveBtn.onclick       = () => window.Account.saveSearch(query);
+            } else {
+                if (saveBtn) saveBtn.style.display = 'none';
             }
         }
 
-        attachCardListeners();
+        // Abrir detalles al hacer clic en una tarjeta del resultado IA
+        document.querySelectorAll('.match-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const id = card.dataset.id;
+                window._setOpenedFromAI?.(true);   // marcar: venimos del modal IA
+                if (String(id).startsWith('sim_')) {
+                    const prop = results.find(p => String(p.id) === id);
+                    if (prop) showSimulatedDetail(prop);
+                } else {
+                    aiModal?.classList.add('hidden');
+                    openDetailsModal(Number(id));
+                }
+            });
+        });
+    }
+
+    // Muestra detalles de una propiedad simulada (reutiliza el modal existente)
+    function showSimulatedDetail(prop) {
+        const detailsModal = document.getElementById('property-details-modal');
+        if (!detailsModal) return;
+        document.getElementById('detail-image').src              = prop.image;
+        document.getElementById('detail-title').textContent      = prop.title;
+        document.getElementById('detail-location').textContent   = prop.location;
+        document.getElementById('detail-price').textContent      = prop.price;
+        document.getElementById('detail-type').textContent       = prop.type;
+        document.getElementById('detail-status').textContent     = prop.status === 'rent' ? 'EN RENTA' : 'EN VENTA';
+        document.getElementById('detail-beds').textContent       = prop.bedrooms;
+        document.getElementById('detail-baths').textContent      = prop.bathrooms;
+        document.getElementById('detail-area').textContent       = prop.area;
+        const descEl = document.getElementById('detail-desc');
+        if (descEl) descEl.textContent = prop.description;
+        const tagsEl = document.getElementById('detail-tags');
+        if (tagsEl) tagsEl.innerHTML = (prop.tags || []).map(t => `<span>${t}</span>`).join('');
+        // Ocultar modal IA y mostrar detalle
+        document.getElementById('ai-modal').classList.add('hidden');
+        // El flag _openedFromAI ya fue activado antes de llamar a esta función
+        detailsModal.classList.remove('hidden');
     }
 
     aiSearchBtn?.addEventListener('click', () => performAISearch(aiSearchInput?.value || ''));
@@ -705,4 +1060,41 @@ window.selectTimeSlot = function(time, btn) {
     const date = document.getElementById('visit-date')?.value;
     const confirmBtn = document.getElementById('btn-confirm-visit');
     if (confirmBtn) confirmBtn.disabled = !date;
+};
+
+// Agrega la ciudad al campo de búsqueda y activa el chip visualmente
+window.appendCityToSearch = function(city) {
+    const input = document.getElementById('semantic-search');
+    if (!input) return;
+    // Quitar ciudad previa si ya hay una
+    const CITIES = ['CDMX','Monterrey','Guadalajara','Cancún','Querétaro','Mérida','Tijuana','León','Puebla','Oaxaca','Veracruz','Puebla','San Luis Potosí','Aguascalientes','Chihuahua','Saltillo'];
+    let current = input.value;
+    CITIES.forEach(c => { current = current.replace(` en ${c}`, '').replace(` ${c}`, '').trim(); });
+    input.value = current ? `${current} en ${city}` : `en ${city}`;
+    // Marcar chip activo
+    document.querySelectorAll('.ai-city-chip').forEach(chip => {
+        chip.classList.toggle('active-city', chip.textContent.includes(city));
+    });
+    input.focus();
+};
+
+// Ejecuta una búsqueda de sugerencia directamente
+window.runSuggestion = function(btn) {
+    const query = btn.textContent.trim();
+    const input = document.getElementById('semantic-search');
+    if (input) input.value = query;
+    // Resaltar ciudad si está en la sugerencia
+    const CITIES = ['CDMX','Monterrey','Guadalajara','Cancún','Querétaro','Mérida','Tijuana','León'];
+    const found = CITIES.find(c => query.toLowerCase().includes(c.toLowerCase()));
+    if (found) {
+        document.querySelectorAll('.ai-city-chip').forEach(chip => {
+            chip.classList.toggle('active-city', chip.textContent.includes(found));
+        });
+    }
+    // Ejecutar búsqueda IA
+    if (typeof performAISearch === 'function') {
+        performAISearch(query);
+    } else {
+        document.getElementById('btn-search-ai')?.click();
+    }
 };

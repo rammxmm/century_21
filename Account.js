@@ -1,6 +1,6 @@
 import { auth, db, googleProvider } from './firebase-init.js';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { doc, getDoc, setDoc, collection, getDocs, addDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 window.Account = (() => {
 
@@ -31,8 +31,8 @@ window.Account = (() => {
 
     const CONFIG = {
         comprador: {
-            btnLabel: 'Solicitar una Visita',
-            btnAction: () => alert('Abriendo solicitud de visita...'),
+            btnLabel: 'Explorar Propiedades',
+            btnAction: () => document.querySelector('.featured-section')?.scrollIntoView({ behavior: 'smooth' }),
             greeting: 'Bienvenido de vuelta',
             badgeColor: '#3498db',
             badgeLabel: 'COMPRADOR',
@@ -45,15 +45,15 @@ window.Account = (() => {
             badgeLabel: 'VENDEDOR',
         },
         agente: {
-            btnLabel: 'Gestionar Listings',
-            btnAction: () => document.getElementById('client-modal')?.classList.remove('hidden'),
+            btnLabel: 'Nueva Propiedad',
+            btnAction: () => document.getElementById('publish-modal')?.classList.remove('hidden'),
             greeting: 'Gestiona tu cartera',
             badgeColor: '#8e44ad',
             badgeLabel: 'AGENTE',
         },
         inversionista: {
-            btnLabel: 'Análisis de Mercado',
-            btnAction: () => showPanel('panel-inversionista'),
+            btnLabel: 'Ver Análisis',
+            btnAction: () => document.getElementById('account-panel')?.scrollIntoView({ behavior: 'smooth' }),
             greeting: 'El mercado te habla',
             badgeColor: '#B79860',
             badgeLabel: 'INVERSIONISTA',
@@ -160,34 +160,45 @@ window.Account = (() => {
         const statsEl = document.getElementById('banner-stats');
         if (!statsEl) return;
 
-        const favLength = getSession().favoritos ? getSession().favoritos.length : 0;
-        const propLength = getSession().propiedades ? getSession().propiedades.length : 0;
-        const clientLength = getSession().clientes ? getSession().clientes.length : 0;
+        const sess = getSession();
+        const favLength    = (sess.favoritos          || []).length;
+        const propLength   = (sess.propiedades        || []).length;
+        const clientLength = (sess.clientes           || []).length;
+        const savedLength  = (sess.busquedasGuardadas || []).length;
+        const visitasLength = (sess.visitas           || []).length;
+        const historialLength = (sess.historial       || []).length;
 
-        const savedLength = getSession().busquedasGuardadas ? getSession().busquedasGuardadas.length : 0;
-        const visitasLength = getSession().visitas ? getSession().visitas.length : 0;
-        const historialLength = getSession().historial ? getSession().historial.length : 0;
+        // Calcular valor total del portafolio del inversionista desde favoritos
+        const allProps  = window.allProperties || [];
+        const favProps  = (sess.favoritos || []).map(id => allProps.find(p => String(p.id) === String(id))).filter(Boolean);
+        const totalVal  = favProps.reduce((sum, p) => sum + (parseFloat((p.price || '').replace(/[^0-9.]/g,'')) || 0), 0);
+        const totalValStr = totalVal > 0 ? '$' + Math.round(totalVal / 1e6 * 10) / 10 + 'M' : '$0';
+
+        // Propiedades publicadas globalmente por este vendedor
+        const globalProps  = window.globalPublishedProps || [];
+        const myPublished  = auth.currentUser ? globalProps.filter(p => p.vendedorId === auth.currentUser.uid) : [];
+        const publishedCnt = myPublished.length || propLength;
 
         const stats = {
             comprador: `
                 <div class="stat-item"><span class="stat-num">${favLength}</span><span class="stat-label">Favoritos</span></div>
-                <div class="stat-item"><span class="stat-num">${visitasLength}</span><span class="stat-label">Visitas agendadas</span></div>
+                <div class="stat-item"><span class="stat-num">${visitasLength}</span><span class="stat-label">Citas agendadas</span></div>
                 <div class="stat-item"><span class="stat-num">${savedLength}</span><span class="stat-label">Búsquedas guardadas</span></div>
-                <div class="stat-item"><span class="stat-num">${historialLength}</span><span class="stat-label">Propiedades exploradas</span></div>
+                <div class="stat-item"><span class="stat-num">${historialLength}</span><span class="stat-label">Vistas</span></div>
             `,
             vendedor: `
-                <div class="stat-item"><span class="stat-num">${propLength}</span><span class="stat-label">Propiedades activas</span></div>
-                <div class="stat-item"><span class="stat-num">0</span><span class="stat-label">Interesados este mes</span></div>
-                <div class="stat-item"><span class="stat-num">$0</span><span class="stat-label">Valor en cartera</span></div>
+                <div class="stat-item"><span class="stat-num">${publishedCnt}</span><span class="stat-label">Publicaciones activas</span></div>
+                <div class="stat-item"><span class="stat-num">${visitasLength}</span><span class="stat-label">Visitas recibidas</span></div>
+                <div class="stat-item"><span class="stat-num">${globalProps.length}</span><span class="stat-label">Propiedades en mercado</span></div>
             `,
             agente: `
-                <div class="stat-item"><span class="stat-num">0</span><span class="stat-label">Listings activos</span></div>
+                <div class="stat-item"><span class="stat-num">${(window.globalPublishedProps||[]).length}</span><span class="stat-label">Listings disponibles</span></div>
                 <div class="stat-item"><span class="stat-num">${clientLength}</span><span class="stat-label">Clientes activos</span></div>
-                <div class="stat-item"><span class="stat-num">$0</span><span class="stat-label">En gestión</span></div>
+                <div class="stat-item"><span class="stat-num">${visitasLength}</span><span class="stat-label">Visitas coordinadas</span></div>
             `,
             inversionista: `
-                <div class="stat-item"><span class="stat-num">8.4%</span><span class="stat-label">ROI promedio</span></div>
-                <div class="stat-item"><span class="stat-num">4</span><span class="stat-label">Propiedades</span></div>
+                <div class="stat-item"><span class="stat-num">${favLength}</span><span class="stat-label">En portafolio</span></div>
+                <div class="stat-item"><span class="stat-num">${totalValStr}</span><span class="stat-label">Valor estimado</span></div>
                 <div class="stat-item"><span class="stat-num">+12%</span><span class="stat-label">Plusvalía anual</span></div>
             `,
         };
@@ -219,8 +230,9 @@ window.Account = (() => {
     }
 
     function renderPropCard(prop) {
+        const safeId = String(prop.id);
         return `
-            <div class="property-card-small" style="cursor:pointer;" onclick="window.openDetailsModal(${prop.id})">
+            <div class="property-card-small" style="cursor:pointer;" onclick="window.openDetailsModal('${safeId}')">
                 <div class="card-img-small" style="height:150px;">
                     <img src="${prop.image}" alt="${prop.title}">
                 </div>
@@ -228,7 +240,7 @@ window.Account = (() => {
                     <h3 style="font-size:1rem; margin-bottom:0.2rem;">${prop.price}</h3>
                     <p style="font-size:0.85rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${prop.title}</p>
                     <div class="card-amenities" style="font-size:0.8rem;">
-                        <span>🛌 ${prop.bedrooms}</span>
+                        <span>🛏 ${prop.bedrooms}</span>
                         <span>🚿 ${prop.bathrooms}</span>
                         <span>📐 ${prop.area}m²</span>
                     </div>
