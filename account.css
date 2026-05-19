@@ -1,0 +1,368 @@
+/* ==========================================================================
+   ACCOUNT PANELS & MODALS (PREMIUM ESTHETICS)
+   ========================================================================== */
+
+/* Variables ya definidas en styles.css:
+   --gold: #B79860;
+   --dark-gray: #1a1a1a;
+   --white: #ffffff;
+*/
+
+/* ----------------------------------------------------
+   MODAL OVERLAY Y TARJETA (Perfil, Publicar, etc.)
+   ---------------------------------------------------- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.profile-modal-card, .publish-modal-card, .visit-modal-card {
+    background: var(--white);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+    transform: translateY(0);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.hidden .profile-modal-card, 
+.modal-overlay.hidden .publish-modal-card {
+    transform: translateY(20px);
+}
+
+.profile-close-btn, .publish-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.1);
+    border: none;
+    color: var(--white);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    transition: background 0.3s, color 0.3s;
+}
+
+.profile-close-btn:hover, .publish-close-btn:hover {
+    background: var(--white);
+    color: var(--dark-gray);
+}
+
+/* ----------------------------------------------------
+   HEADER DEL MODAL
+   ---------------------------------------------------- */
+.profile-card-header, .publish-card-header {
+    background: linear-gradient(135deg, var(--dark-gray) 0%, #000 100%);
+    padding: 3rem 2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.profile-avatar-lg {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--white);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.profile-account-label {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--white);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    backdrop-filter: blur(5px);
+}
+
+/* ----------------------------------------------------
+   BODY DEL MODAL Y FORMULARIOS
+   ---------------------------------------------------- */
+.profile-card-body, .publish-card-body {
+    padding: 2.5rem;
+}
+
+.profile-card-title h2, .publish-card-title h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+}
+
+.profile-card-title p, .publish-card-title p {
+    color: #666;
+    font-size: 0.85rem;
+    margin-bottom: 2rem;
+}
+
+.pf-field {
+    margin-bottom: 1.5rem;
+}
+
+.pf-field label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #888;
+    margin-bottom: 0.5rem;
+}
+
+.pf-field input, .pf-field select, .pf-field textarea {
+    width: 100%;
+    padding: 0.8rem 0;
+    border: none;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    background: transparent;
+    transition: border-color 0.3s;
+}
+
+.pf-field input:focus, .pf-field select:focus, .pf-field textarea:focus {
+    border-bottom-color: var(--gold);
+}
+
+.pf-field input[readonly] {
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+.pf-submit, .pub-submit {
+    width: 100%;
+    padding: 1rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.row-fields {
+    display: flex;
+    gap: 1rem;
+}
+
+.row-fields .pf-field {
+    flex: 1;
+}
+
+/* ----------------------------------------------------
+   PANELES DE CUENTA (Vendedor, Agente, Inversionista)
+   ---------------------------------------------------- */
+.account-panel {
+    padding: 5rem 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+}
+
+.panel-header h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.panel-header p {
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 0.2rem;
+}
+
+/* GRID DE PROPIEDADES (Vendedor) */
+.mis-propiedades-grid, .clientes-grid, .mercado-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.mi-propiedad-card {
+    background: var(--white);
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+}
+
+.mi-propiedad-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+    border-color: var(--gold);
+}
+
+.mp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.mp-header h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.mp-status {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+.status-activo { background: rgba(39, 174, 96, 0.1); color: #27ae60; }
+.status-rentado { background: rgba(52, 152, 219, 0.1); color: #3498db; }
+
+.mp-precio {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--gold);
+}
+
+.mp-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.8rem;
+    color: #666;
+    background: #f9f9f9;
+    padding: 0.8rem;
+    border-radius: 8px;
+}
+
+.mp-stats span {
+    font-weight: 700;
+    color: var(--dark-gray);
+    display: block;
+    font-size: 1.1rem;
+}
+
+.mp-actions {
+    margin-top: auto;
+}
+
+.btn-mp {
+    background: transparent;
+    border: 1px solid #ddd;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.btn-mp:hover {
+    background: var(--dark-gray);
+    color: var(--white);
+    border-color: var(--dark-gray);
+}
+
+.mp-nueva {
+    border: 2px dashed #ccc;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: none;
+    color: #888;
+}
+.mp-nueva:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(183, 152, 96, 0.05);
+}
+.mp-nueva span {
+    font-size: 3rem;
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+}
+
+/* TARJETAS DE AGENTE Y MERCADO */
+.cliente-card, .mercado-card {
+    background: var(--white);
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+}
+
+.mercado-zona {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--gold);
+    display: inline-block;
+}
+
+.mercado-stat {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.8rem;
+    font-size: 0.9rem;
+}
+
+.mstat-label { color: #666; }
+.mstat-val { font-weight: 700; }
+.trend-up { color: #27ae60; }
+.trend-down { color: #e74c3c; }
+
+/* RESTRICCIÓN PERFIL */
+.profile-notice {
+    font-size: 0.75rem;
+    color: #888;
+    background: #f5f5f5;
+    padding: 0.8rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    border-left: 3px solid var(--gold);
+}

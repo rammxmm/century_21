@@ -1,3 +1,6 @@
+import { db } from './firebase-init.js';
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // ELEMENTOS DEL HOME
@@ -107,26 +110,36 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('properties.json');
             let baseProps = await response.json();
 
-            // Usa window.Account si Account no está en el scope local
-            const accountApi = window.Account || (typeof Account !== 'undefined' ? Account : null);
-            const session = accountApi ? accountApi.getSession() : null;
-
-            if (session && session.propiedades) {
-                const extraProps = session.propiedades.map(p => ({
-                    id: p.id,
-                    title: p.titulo,
-                    price: p.precio,
-                    location: p.ubicacion,
-                    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80',
-                    status: 'buy',
-                    type: 'casa',
-                    bedrooms: 3,
-                    bathrooms: 2,
-                    area: 250,
-                    description: 'Propiedad publicada recientemente.',
-                    tags: ['Nueva', 'Exclusiva']
-                }));
-                baseProps = [...extraProps, ...baseProps];
+            // Cargar propiedades de la base de datos global de Firestore
+            try {
+                const globalSnapshot = await getDocs(collection(db, "global_properties"));
+                const globalProps = [];
+                globalSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    globalProps.push({
+                        id: data.id || Date.now(),
+                        title: data.titulo,
+                        price: data.precio,
+                        location: data.ubicacion,
+                        image: data.image || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80',
+                        status: data.status || 'buy',
+                        type: data.type || 'casa',
+                        bedrooms: data.bedrooms || 3,
+                        bathrooms: data.bathrooms || 2,
+                        area: data.area || 250,
+                        description: data.description || 'Propiedad publicada recientemente.',
+                        tags: ['Nueva', 'Global'],
+                        vendedorId: data.vendedorId
+                    });
+                });
+                
+                // Exponer globalProps para stats en Account.js
+                window.globalPublishedProps = globalProps;
+                
+                // Combinar catálogo con propiedades globales
+                baseProps = [...globalProps, ...baseProps];
+            } catch (fsErr) {
+                console.error("Error al cargar global_properties de Firestore:", fsErr);
             }
 
             allProperties = baseProps;

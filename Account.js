@@ -1,4 +1,5 @@
-import { auth, db, googleProvider } from './firebase-init.js';
+import { auth, db, googleProvider, storage } from './firebase-init.js';
+import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { doc, getDoc, setDoc, collection, getDocs, addDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -342,6 +343,12 @@ window.Account = (() => {
             </div>
             <div class="saved-searches-list">${savedHtml}</div>
             ${recsHtml}
+
+            <div style="margin-top:4rem; padding:2rem; background:linear-gradient(135deg, #1a1a1a 0%, #000 100%); color:white; border-radius:12px; text-align:center;">
+                <h2 style="color:var(--gold); margin-bottom:1rem;">¿Quieres llevar tus inversiones al siguiente nivel?</h2>
+                <p style="margin-bottom:1.5rem; color:#ccc;">Postúlate como Inversionista y accede a análisis de mercado avanzado, proyecciones de ROI y plusvalía en tiempo real para todas las propiedades de nuestro catálogo.</p>
+                <button class="btn-gold" onclick="window.Account.postularInversionista()">Postularme como Inversionista</button>
+            </div>
         `;
     }
 
@@ -350,21 +357,24 @@ window.Account = (() => {
         const propiedades = user.propiedades || [];
 
         const propsHtml = propiedades.length > 0 ? propiedades.map(p => `
-            <div class="mi-propiedad-card">
-                <div class="mp-header">
-                    <h4>${p.titulo}</h4>
-                    <span class="mp-status status-activo">Activo</span>
-                </div>
-                <div class="mp-precio">${p.precio}</div>
-                <div class="mp-stats">
-                    <div><span>0</span> Vistas</div>
-                    <div><span>0</span> Interesados</div>
-                </div>
-                <div class="mp-actions">
-                    <button class="btn-mp" onclick="alert('Editando...')">✏ Editar</button>
+            <div class="mi-propiedad-card" style="padding:0; overflow:hidden;">
+                <div style="height:140px; background:url('${p.image || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=600'}') center/cover;"></div>
+                <div style="padding:1.5rem;">
+                    <div class="mp-header">
+                        <h4 style="font-size:1.1rem; font-weight:600; line-height:1.2; max-width:70%;">${p.titulo}</h4>
+                        <span class="mp-status status-activo">${p.status === 'rent' ? 'En Renta' : 'En Venta'}</span>
+                    </div>
+                    <div class="mp-precio">${p.precio}</div>
+                    <div class="mp-stats">
+                        <div><span>0</span> Vistas</div>
+                        <div><span>0</span> Interesados</div>
+                    </div>
+                    <div class="mp-actions">
+                        <button class="btn-mp" onclick="alert('Editando...')">✏ Editar</button>
+                    </div>
                 </div>
             </div>
-        `).join('') : '<p>No tienes propiedades publicadas aún.</p>';
+        `).join('') : '<p style="grid-column:1/-1;color:#666;">No tienes propiedades publicadas aún.</p>';
 
         return `
             <div class="panel-header">
@@ -437,7 +447,7 @@ window.Account = (() => {
                                 <span class="mstat-val">${z.rentabilidad}</span>
                             </div>
                         </div>
-                        <button class="btn-mp" onclick="alert('Analizando ${z.zona}...')">Ver oportunidades →</button>
+                        <button class="btn-mp" onclick="document.getElementById('trigger-ai-modal')?.click(); document.getElementById('semantic-search').value = 'Departamentos en ${z.zona} con alto ROI'; setTimeout(() => document.getElementById('btn-search-ai')?.click(), 300);">Ver oportunidades →</button>
                     </div>
                 `).join('')}
             </div>
@@ -578,34 +588,81 @@ window.Account = (() => {
             e.preventDefault();
             const user = getSession();
             if (user) {
+                const now = Date.now();
+                // 30 días = 30 * 24 * 60 * 60 * 1000 = 2592000000 ms
+                if (user.lastProfileUpdate && (now - user.lastProfileUpdate < 2592000000)) {
+                    alert('Solo puedes modificar tus datos personales una vez cada 30 días por seguridad.');
+                    return;
+                }
+
                 user.nombre = document.getElementById('profile-name').value;
                 user.correo = document.getElementById('profile-email').value;
                 user.telefono = document.getElementById('profile-phone').value;
                 user.avatar = user.nombre.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                user.lastProfileUpdate = now;
+                
                 setSession(user);
                 applySession();
                 document.getElementById('profile-modal').classList.add('hidden');
+                alert('Perfil actualizado con éxito.');
             }
         });
 
         document.getElementById('close-publish-modal')?.addEventListener('click', () => {
             document.getElementById('publish-modal').classList.add('hidden');
         });
-        document.getElementById('publish-form')?.addEventListener('submit', (e) => {
+        document.getElementById('publish-form')?.addEventListener('submit', async (e) => {
             e.preventDefault();
             const user = getSession();
             if (user) {
                 const nuevaPropiedad = {
-                    id: 'prop_' + Date.now(),
+                    id: Date.now(),
                     titulo: document.getElementById('pub-title').value,
                     precio: document.getElementById('pub-price').value,
-                    ubicacion: document.getElementById('pub-location').value
+                    ubicacion: document.getElementById('pub-location').value,
+                    status: document.getElementById('pub-status').value,
+                    type: document.getElementById('pub-type').value,
+                    bedrooms: parseInt(document.getElementById('pub-beds').value) || 0,
+                    bathrooms: parseFloat(document.getElementById('pub-baths').value) || 0,
+                    area: parseInt(document.getElementById('pub-area').value) || 0,
+                    image: '', // Se llenará tras subir
+                    vendedorId: auth.currentUser ? auth.currentUser.uid : 'anon',
+                    description: 'Propiedad publicada recientemente por un agente o vendedor.'
                 };
+
+                const fileInput = document.getElementById('pub-image');
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const storageRef = ref(storage, 'propiedades/' + Date.now() + '_' + file.name);
+                    try {
+                        const snapshot = await uploadBytes(storageRef, file);
+                        nuevaPropiedad.image = await getDownloadURL(snapshot.ref);
+                    } catch (err) {
+                        console.error('Error uploading image', err);
+                        alert('No se pudo subir la imagen, usando placeholder.');
+                        nuevaPropiedad.image = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80';
+                    }
+                } else {
+                    nuevaPropiedad.image = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80';
+                }
+
                 user.propiedades.push(nuevaPropiedad);
-                setSession(user);
+                await setSession(user);
                 applySession();
+
+                // Guardar en la colección global
+                try {
+                    await addDoc(collection(db, "global_properties"), nuevaPropiedad);
+                } catch (err) {
+                    console.error("Error saving property globally: ", err);
+                }
+
+                // Disparar recarga de propiedades globales en App.js
+                if (window.appLoadProperties) window.appLoadProperties();
+
                 document.getElementById('publish-modal').classList.add('hidden');
                 e.target.reset();
+                alert('¡Propiedad publicada con éxito! Ahora es visible para todos los compradores.');
             }
         });
 
@@ -687,6 +744,19 @@ window.Account = (() => {
         applySession();
     }
 
+    async function postularInversionista() {
+        const user = getSession();
+        if (user) {
+            if(confirm('¿Deseas postularte y cambiar tu cuenta a Inversionista? Tendrás acceso a herramientas de análisis de mercado y ROI.')) {
+                user.tipo = 'inversionista';
+                await setSession(user);
+                applySession();
+                alert('¡Felicidades! Ahora eres Inversionista. Disfruta de las nuevas herramientas de análisis.');
+                window.location.reload(); // Recargar para que App.js redibuje las tarjetas con ROI
+            }
+        }
+    }
+
     function init() {
         onAuthStateChanged(auth, async (user) => {
             try {
@@ -748,7 +818,8 @@ window.Account = (() => {
         loginWithGoogle,
         cancelVisit,
         saveSearch,
-        deleteSearch
+        deleteSearch,
+        postularInversionista
     };
 
 })();

@@ -136,6 +136,41 @@
         <div class="property-grid" id="full-properties-grid"></div>
     </section>
 
+    <!-- Sección de Preguntas Frecuentes (FAQ) - ISO/IEC 26514:2008 -->
+    <section class="faq-section">
+        <div class="faq-container">
+            <h2 class="faq-title">PREGUNTAS FRECUENTES (FAQ)</h2>
+            <p class="faq-subtitle">Centro de Ayuda y Documentación de Usuario</p>
+            
+            <div class="faq-list">
+                <details class="faq-item">
+                    <summary>¿Cómo publico una propiedad como Vendedor?</summary>
+                    <div class="faq-content">
+                        <p>Para publicar una propiedad, debes iniciar sesión, asegurarte de que tu cuenta sea de tipo "Vendedor" o "Agente". En tu panel principal, haz clic en el botón dorado "+ Publicar Nueva". Llena el formulario con los detalles (Habitaciones, precio, fotos locales) y haz clic en "Publicar Ahora". Tu propiedad será visible globalmente al instante.</p>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>¿Cómo me postulo como Inversionista?</summary>
+                    <div class="faq-content">
+                        <p>Si eres un "Comprador", dirígete a tu panel de cuenta desplazándote hacia abajo. Al final encontrarás un banner exclusivo invitándote a "Postularte como Inversionista". Al aceptar, tendrás acceso a proyecciones de Retorno de Inversión (ROI) y Plusvalía en todas las propiedades.</p>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>¿Cómo modifico mis datos personales?</summary>
+                    <div class="faq-content">
+                        <p>Ve a tu panel y haz clic en "Mi Perfil". Puedes modificar tu nombre, correo y teléfono. Por políticas de seguridad, solo se permite realizar cambios en tu información personal una vez cada 30 días.</p>
+                    </div>
+                </details>
+                <details class="faq-item">
+                    <summary>¿Cómo funciona la búsqueda con IA?</summary>
+                    <div class="faq-content">
+                        <p>Haz clic en "Explorar con IA" en el menú de navegación. En la barra de búsqueda, describe la propiedad de tus sueños con lenguaje natural (ej. "Departamento con buena luz natural cerca del centro"). Nuestra IA analizará la semántica de tu petición para mostrarte las mejores coincidencias del catálogo.</p>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </section>
+
     <!-- Pie de Página -->
     <footer class="footer-dark">
         <div class="footer-container">
@@ -313,11 +348,14 @@
                     </div>
                     <div class="pf-field">
                         <label for="profile-email">CORREO ELECTRÓNICO</label>
-                        <input type="email" id="profile-email" placeholder="tu@email.com" readonly>
+                        <input type="email" id="profile-email" placeholder="tu@email.com">
                     </div>
                     <div class="pf-field">
                         <label for="profile-phone">TELÉFONO</label>
                         <input type="tel" id="profile-phone" placeholder="+52 (55) 0000-0000">
+                    </div>
+                    <div class="profile-notice">
+                        <strong>Nota:</strong> Por seguridad, tus datos personales solo pueden ser modificados una vez cada 30 días.
                     </div>
                     <button type="submit" class="btn-gold pf-submit">Guardar Cambios</button>
                 </form>
@@ -387,31 +425,75 @@
     </div>
 
     <!-- Modal para Publicar Propiedad (Vendedores) -->
-    <div id="publish-modal" class="ai-modal hidden">
-        <div class="ai-modal-content" style="max-width: 600px;">
-            <button class="close-modal" id="close-publish-modal">&times;</button>
-            <div class="ai-body">
-                <h2>Publicar Nueva Propiedad</h2>
-                <form id="publish-form" style="display:flex; flex-direction:column; gap:1rem; margin-top:1.5rem;">
-                    <div>
-                        <label style="color:#aaa; font-size:0.9rem;">Título</label>
-                        <input type="text" id="pub-title" required class="filter-select"
-                            style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
-                    </div>
-                    <div style="display:flex; gap:1rem;">
-                        <div style="flex:1;">
-                            <label style="color:#aaa; font-size:0.9rem;">Precio</label>
-                            <input type="text" id="pub-price" required placeholder="$0,000,000" class="filter-select"
-                                style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+    <div id="publish-modal" class="modal-overlay hidden">
+        <div class="publish-modal-card" style="max-width: 650px;">
+            <button class="publish-close-btn" id="close-publish-modal">&times;</button>
+            <div class="publish-card-header">
+                <div class="profile-avatar-lg" style="background:var(--gold);">P</div>
+                <div class="profile-account-label">NUEVA PUBLICACIÓN</div>
+            </div>
+            <div class="publish-card-body">
+                <div class="publish-card-title">
+                    <h2>Publicar Propiedad</h2>
+                    <p>Agrega los detalles para mostrar tu propiedad al mundo.</p>
+                </div>
+                <form id="publish-form">
+                    <div class="row-fields">
+                        <div class="pf-field">
+                            <label>OPERACIÓN</label>
+                            <select id="pub-status" required>
+                                <option value="buy">En Venta</option>
+                                <option value="rent">En Renta</option>
+                            </select>
                         </div>
-                        <div style="flex:1;">
-                            <label style="color:#aaa; font-size:0.9rem;">Ubicación</label>
-                            <input type="text" id="pub-location" required class="filter-select"
-                                style="width:100%; padding:0.8rem; background:#222; color:#fff; border:1px solid #444; border-radius:4px; margin-top:0.3rem;">
+                        <div class="pf-field">
+                            <label>TIPO DE PROPIEDAD</label>
+                            <select id="pub-type" required>
+                                <option value="casa">Casa</option>
+                                <option value="departamento">Departamento</option>
+                                <option value="penthouse">Penthouse</option>
+                                <option value="loft">Loft</option>
+                            </select>
                         </div>
                     </div>
-                    <button type="submit" class="btn-gold"
-                        style="width:100%; margin-top:1rem; padding:1rem;">Publicar</button>
+
+                    <div class="pf-field">
+                        <label>TÍTULO DE LA PUBLICACIÓN</label>
+                        <input type="text" id="pub-title" required placeholder="Ej: Hermosa casa con jardín">
+                    </div>
+
+                    <div class="row-fields">
+                        <div class="pf-field">
+                            <label>PRECIO (MXN)</label>
+                            <input type="text" id="pub-price" required placeholder="$0,000,000">
+                        </div>
+                        <div class="pf-field">
+                            <label>UBICACIÓN / CIUDAD</label>
+                            <input type="text" id="pub-location" required placeholder="Ej: CDMX, Polanco">
+                        </div>
+                    </div>
+
+                    <div class="row-fields">
+                        <div class="pf-field">
+                            <label>HABITACIONES</label>
+                            <input type="number" id="pub-beds" min="0" required placeholder="0">
+                        </div>
+                        <div class="pf-field">
+                            <label>BAÑOS</label>
+                            <input type="number" id="pub-baths" min="0" step="0.5" required placeholder="0">
+                        </div>
+                        <div class="pf-field">
+                            <label>ÁREA (m²)</label>
+                            <input type="number" id="pub-area" min="0" required placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="pf-field">
+                        <label>FOTO DE LA PROPIEDAD (SUBIR ARCHIVO)</label>
+                        <input type="file" id="pub-image" accept="image/*" required>
+                    </div>
+
+                    <button type="submit" class="btn-gold pub-submit">Publicar Ahora</button>
                 </form>
             </div>
         </div>
@@ -456,8 +538,8 @@
     </div>
 
     <!-- Scripts — account.js primero, luego app.js -->
-    <script type="module" src="account.js"></script>
-    <script type="module" src="app.js"></script>
+    <script type="module" src="account.js?v=2"></script>
+    <script type="module" src="app.js?v=2"></script>
 </body>
 
 </html>
