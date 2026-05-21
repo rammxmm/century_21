@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,7 +22,15 @@
       --blue: #60a5fa;
       --red: #f87171;
     }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       background: var(--dark);
@@ -38,319 +47,546 @@
       position: relative;
       overflow: hidden;
     }
+
     .hero::before {
       content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(200,169,81,.18) 0%, transparent 70%);
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(200, 169, 81, .18) 0%, transparent 70%);
       pointer-events: none;
     }
+
     .logo-row {
-      display: flex; align-items: center; justify-content: center; gap: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
       margin-bottom: 28px;
     }
+
     .logo-badge {
-      width: 52px; height: 52px; border-radius: 14px;
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
       background: linear-gradient(135deg, var(--gold), #8a6a1a);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; font-weight: 800; color: #000; letter-spacing: -1px;
-      box-shadow: 0 4px 24px rgba(200,169,81,.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 800;
+      color: #000;
+      letter-spacing: -1px;
+      box-shadow: 0 4px 24px rgba(200, 169, 81, .4);
     }
-    .logo-text { font-size: 22px; font-weight: 700; color: var(--gold); }
-    .hero h1 { font-size: clamp(28px,5vw,44px); font-weight: 800; line-height: 1.15; margin-bottom: 16px; }
-    .hero h1 span { color: var(--gold); }
-    .hero p { font-size: 16px; color: var(--muted); max-width: 560px; margin: 0 auto; }
+
+    .logo-text {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 44px);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 span {
+      color: var(--gold);
+    }
+
+    .hero p {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 560px;
+      margin: 0 auto;
+    }
 
     /* ── MAIN ── */
-    main { max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
+    main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
 
     /* ── SECTION TITLE ── */
     .section-label {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 11px; font-weight: 700; letter-spacing: 2px;
-      text-transform: uppercase; color: var(--gold); margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
     }
+
     .section-label::after {
-      content: ''; flex: 1; height: 1px; background: var(--border);
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
     }
 
     /* ── STEPS ── */
-    .steps { display: flex; flex-direction: column; gap: 16px; margin-bottom: 48px; }
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
     .step {
-      display: flex; gap: 20px; align-items: flex-start;
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 16px; padding: 24px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
       transition: border-color .2s, box-shadow .2s;
     }
-    .step:hover { border-color: var(--gold); box-shadow: 0 0 0 1px rgba(200,169,81,.15); }
-    .step-num {
-      min-width: 40px; height: 40px; border-radius: 12px;
-      background: linear-gradient(135deg, var(--gold), #8a6a1a);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px; font-weight: 800; color: #000;
+
+    .step:hover {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 1px rgba(200, 169, 81, .15);
     }
-    .step-body h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
-    .step-body p  { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+    .step-num {
+      min-width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--gold), #8a6a1a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+      color: #000;
+    }
+
+    .step-body h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .step-body p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
     .step-body code {
-      display: inline-block; background: #0d0d0d; border: 1px solid var(--border);
-      border-radius: 6px; padding: 2px 8px; font-size: 13px;
-      color: var(--gold-light); font-family: 'Courier New', monospace; margin-top: 4px;
+      display: inline-block;
+      background: #0d0d0d;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 13px;
+      color: var(--gold-light);
+      font-family: 'Courier New', monospace;
+      margin-top: 4px;
     }
 
     /* ── CODE BLOCK ── */
     .code-block {
-      background: #0a0a0a; border: 1px solid var(--border);
-      border-radius: 12px; padding: 20px 24px; margin-top: 10px;
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-top: 10px;
       position: relative;
     }
+
     .code-block pre {
-      font-family: 'Courier New', monospace; font-size: 13px;
-      color: var(--gold-light); line-height: 1.8; overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: var(--gold-light);
+      line-height: 1.8;
+      overflow-x: auto;
     }
-    .code-block .comment { color: #555; }
+
+    .code-block .comment {
+      color: #555;
+    }
+
     .code-label {
-      font-size: 11px; color: var(--muted); font-weight: 600;
-      letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
     }
 
     /* ── BADGES ── */
     .badge {
-      display: inline-block; padding: 3px 10px; border-radius: 20px;
-      font-size: 12px; font-weight: 600; margin-left: 8px; vertical-align: middle;
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 8px;
+      vertical-align: middle;
     }
-    .badge-opt { background: rgba(96,165,250,.15); color: var(--blue); border: 1px solid rgba(96,165,250,.3); }
-    .badge-req { background: rgba(248,113,113,.12); color: var(--red); border: 1px solid rgba(248,113,113,.25); }
+
+    .badge-opt {
+      background: rgba(96, 165, 250, .15);
+      color: var(--blue);
+      border: 1px solid rgba(96, 165, 250, .3);
+    }
+
+    .badge-req {
+      background: rgba(248, 113, 113, .12);
+      color: var(--red);
+      border: 1px solid rgba(248, 113, 113, .25);
+    }
 
     /* ── GRID CARDS ── */
-    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 48px; }
-    @media(max-width:600px){ .grid2{ grid-template-columns: 1fr; } }
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    @media(max-width:600px) {
+      .grid2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .info-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 16px; padding: 22px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
     }
-    .info-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-    .info-card ul { list-style: none; }
+
+    .info-card h4 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-card ul {
+      list-style: none;
+    }
+
     .info-card ul li {
-      font-size: 13px; color: var(--muted); padding: 5px 0;
-      border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      padding: 5px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .info-card ul li:last-child { border-bottom: none; }
-    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+
+    .info-card ul li:last-child {
+      border-bottom: none;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      flex-shrink: 0;
+    }
 
     /* ── ALERT ── */
     .alert {
-      display: flex; gap: 14px; align-items: flex-start;
-      border-radius: 12px; padding: 18px 20px; margin-bottom: 48px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 48px;
     }
-    .alert-info  { background: rgba(96,165,250,.07);  border: 1px solid rgba(96,165,250,.2);  }
-    .alert-warn  { background: rgba(251,191,36,.07);  border: 1px solid rgba(251,191,36,.2);  }
-    .alert-icon  { font-size: 20px; margin-top: 1px; }
-    .alert-text  { font-size: 13px; line-height: 1.65; color: var(--muted); }
-    .alert-text strong { color: var(--text); }
+
+    .alert-info {
+      background: rgba(96, 165, 250, .07);
+      border: 1px solid rgba(96, 165, 250, .2);
+    }
+
+    .alert-warn {
+      background: rgba(251, 191, 36, .07);
+      border: 1px solid rgba(251, 191, 36, .2);
+    }
+
+    .alert-icon {
+      font-size: 20px;
+      margin-top: 1px;
+    }
+
+    .alert-text {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+
+    .alert-text strong {
+      color: var(--text);
+    }
 
     /* ── TABLE ── */
-    .table-wrap { overflow-x: auto; margin-bottom: 48px; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    thead th {
-      text-align: left; padding: 12px 16px;
-      background: #111; border-bottom: 1px solid var(--border);
-      color: var(--muted); font-weight: 600; letter-spacing: .5px;
+    .table-wrap {
+      overflow-x: auto;
+      margin-bottom: 48px;
     }
-    tbody td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--muted); }
-    tbody tr:hover td { background: rgba(200,169,81,.04); }
-    .status-ok  { color: var(--green); font-weight: 600; }
-    .status-bad { color: var(--red);   font-weight: 600; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead th {
+      text-align: left;
+      padding: 12px 16px;
+      background: #111;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: .5px;
+    }
+
+    tbody td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    tbody tr:hover td {
+      background: rgba(200, 169, 81, .04);
+    }
+
+    .status-ok {
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .status-bad {
+      color: var(--red);
+      font-weight: 600;
+    }
 
     /* ── FOOTER ── */
     footer {
-      text-align: center; padding: 32px; border-top: 1px solid var(--border);
-      font-size: 12px; color: var(--muted);
+      text-align: center;
+      padding: 32px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
     }
-    footer span { color: var(--gold); }
+
+    footer span {
+      color: var(--gold);
+    }
   </style>
 </head>
+
 <body>
 
-<!-- HERO -->
-<div class="hero">
-  <div class="logo-row">
-    <div class="logo-badge">C21</div>
-    <div class="logo-text">CENTURY 21 Platform</div>
-  </div>
-  <h1>Guía de <span>Instalación y Uso</span></h1>
-  <p>Cómo abrir y ejecutar el sistema en cualquier computadora sin necesidad de internet ni servidores externos.</p>
-</div>
-
-<main>
-
-  <!-- REQUISITOS -->
-  <div class="section-label">Requisitos previos</div>
-  <div class="grid2">
-    <div class="info-card">
-      <h4>🖥️ Software necesario</h4>
-      <ul>
-        <li><span class="dot"></span>Node.js v14 o superior</li>
-        <li><span class="dot"></span>Navegador web moderno</li>
-        <li><span class="dot"></span>Windows / macOS / Linux</li>
-      </ul>
+  <!-- HERO -->
+  <div class="hero">
+    <div class="logo-row">
+      <div class="logo-badge">C21</div>
+      <div class="logo-text">CENTURY 21 Platform</div>
     </div>
-    <div class="info-card">
-      <h4>📁 Archivos del proyecto</h4>
-      <ul>
-        <li><span class="dot"></span>Index.html — Página principal</li>
-        <li><span class="dot"></span>login.html — Inicio de sesión</li>
-        <li><span class="dot"></span>App.js — Lógica principal</li>
-        <li><span class="dot"></span>styles.css — Estilos</li>
-      </ul>
-    </div>
+    <h1>Guía de <span>Instalación y Uso</span></h1>
+    <p>Cómo abrir y ejecutar el sistema en cualquier computadora sin necesidad de internet ni servidores externos.</p>
   </div>
 
-  <div class="alert alert-info">
-    <div class="alert-icon">ℹ️</div>
-    <div class="alert-text">
-      <strong>¿Cómo instalar Node.js?</strong><br/>
-      Descárgalo gratuitamente desde <strong>https://nodejs.org</strong>  →  elige la versión <strong>LTS</strong>  →  ejecuta el instalador y sigue los pasos. Una vez instalado, reinicia tu computadora.
-    </div>
-  </div>
+  <main>
 
-  <!-- PASOS -->
-  <div class="section-label">Pasos para ejecutar</div>
-  <div class="steps">
-
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-body">
-        <h3>Copia la carpeta del proyecto</h3>
-        <p>Transfiere la carpeta completa <code>CENTURY 21</code> a la nueva computadora mediante USB, red local o cualquier medio. No elimines ni muevas archivos de dentro.</p>
+    <!-- REQUISITOS -->
+    <div class="section-label">Requisitos previos</div>
+    <div class="grid2">
+      <div class="info-card">
+        <h4>🖥️ Software necesario</h4>
+        <ul>
+          <li><span class="dot"></span>Node.js v14 o superior</li>
+          <li><span class="dot"></span>Navegador web moderno</li>
+          <li><span class="dot"></span>Windows / macOS / Linux</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>📁 Archivos del proyecto</h4>
+        <ul>
+          <li><span class="dot"></span>Index.html — Página principal</li>
+          <li><span class="dot"></span>login.html — Inicio de sesión</li>
+          <li><span class="dot"></span>App.js — Lógica principal</li>
+          <li><span class="dot"></span>styles.css — Estilos</li>
+        </ul>
       </div>
     </div>
 
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-body">
-        <h3>Abre una terminal en la carpeta del proyecto</h3>
-        <p>En Windows: navega a la carpeta, haz clic derecho en un espacio vacío y selecciona <code>Abrir en Terminal</code> (o "PowerShell aquí"). En macOS/Linux: usa el comando <code>cd</code> para llegar a la carpeta.</p>
+    <div class="alert alert-info">
+      <div class="alert-icon">ℹ️</div>
+      <div class="alert-text">
+        <strong>¿Cómo instalar Node.js?</strong><br />
+        Descárgalo gratuitamente desde <strong>https://nodejs.org</strong> → elige la versión <strong>LTS</strong> →
+        ejecuta el instalador y sigue los pasos. Una vez instalado, reinicia tu computadora.
       </div>
     </div>
 
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-body">
-        <h3>Ejecuta el servidor local</h3>
-        <p>Escribe el siguiente comando en la terminal y presiona <strong>Enter</strong>:</p>
-        <div class="code-block">
-          <div class="code-label">Terminal / PowerShell</div>
-          <pre><span class="comment"># Inicia el servidor (no requiere instalación previa)</span>
-npx serve .</pre>
+    <!-- PASOS -->
+    <div class="section-label">Pasos para ejecutar</div>
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Copia la carpeta del proyecto</h3>
+          <p>Transfiere la carpeta completa <code>CENTURY 21</code> a la nueva computadora mediante USB, red local o
+            cualquier medio. No elimines ni muevas archivos de dentro.</p>
         </div>
       </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Abre una terminal en la carpeta del proyecto</h3>
+          <p>En Windows: navega a la carpeta, haz clic derecho en un espacio vacío y selecciona
+            <code>Abrir en Terminal</code> (o "PowerShell aquí"). En macOS/Linux: usa el comando <code>cd</code> para
+            llegar a la carpeta.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Ejecuta el servidor local</h3>
+          <p>Escribe el siguiente comando en la terminal y presiona <strong>Enter</strong>:</p>
+          <div class="code-block">
+            <div class="code-label">Terminal / PowerShell</div>
+            <pre><span class="comment"># Inicia el servidor (no requiere instalación previa)</span>
+npx serve .</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Abre el sistema en tu navegador</h3>
+          <p>La terminal mostrará una dirección como <code>http://localhost:3000</code>. Abre esa URL en tu navegador.
+            ¡El sistema estará listo para usarse!</p>
+        </div>
+      </div>
+
     </div>
 
-    <div class="step">
-      <div class="step-num">4</div>
-      <div class="step-body">
-        <h3>Abre el sistema en tu navegador</h3>
-        <p>La terminal mostrará una dirección como <code>http://localhost:3000</code>. Abre esa URL en tu navegador. ¡El sistema estará listo para usarse!</p>
+    <!-- ADVERTENCIA FIREBASE -->
+    <div class="alert alert-warn">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-text">
+        <strong>Nota sobre Firebase:</strong> Este proyecto usa Firebase para autenticación y base de datos. Las
+        funciones de <strong>login, registro y guardado de datos</strong> requieren conexión a internet para conectar
+        con Firebase. El resto de la interfaz funciona sin conexión.
       </div>
     </div>
 
-  </div>
-
-  <!-- ADVERTENCIA FIREBASE -->
-  <div class="alert alert-warn">
-    <div class="alert-icon">⚠️</div>
-    <div class="alert-text">
-      <strong>Nota sobre Firebase:</strong> Este proyecto usa Firebase para autenticación y base de datos. Las funciones de <strong>login, registro y guardado de datos</strong> requieren conexión a internet para conectar con Firebase. El resto de la interfaz funciona sin conexión.
+    <!-- PÁGINAS -->
+    <div class="section-label">Páginas del sistema</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Página</th>
+            <th>Archivo</th>
+            <th>URL local</th>
+            <th>Requiere login</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>🏠 Inicio</td>
+            <td><code>Index.html</code></td>
+            <td><code>localhost:3000</code></td>
+            <td class="status-ok">No</td>
+          </tr>
+          <tr>
+            <td>🔑 Iniciar sesión</td>
+            <td><code>login.html</code></td>
+            <td><code>localhost:3000/login.html</code></td>
+            <td class="status-ok">No</td>
+          </tr>
+          <tr>
+            <td>📝 Registro</td>
+            <td><code>register.html</code></td>
+            <td><code>localhost:3000/register.html</code></td>
+            <td class="status-ok">No</td>
+          </tr>
+          <tr>
+            <td>👤 Mi cuenta</td>
+            <td><code>Account.js</code></td>
+            <td><code>localhost:3000/account</code></td>
+            <td class="status-bad">Sí</td>
+          </tr>
+          <tr>
+            <td>🤝 Afiliados</td>
+            <td><code>afiliados.html</code></td>
+            <td><code>localhost:3000/afiliados.html</code></td>
+            <td class="status-ok">No</td>
+          </tr>
+          <tr>
+            <td>📞 Contacto</td>
+            <td><code>contacto.html</code></td>
+            <td><code>localhost:3000/contacto.html</code></td>
+            <td class="status-ok">No</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
 
-  <!-- PÁGINAS -->
-  <div class="section-label">Páginas del sistema</div>
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Página</th>
-          <th>Archivo</th>
-          <th>URL local</th>
-          <th>Requiere login</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>🏠 Inicio</td>
-          <td><code>Index.html</code></td>
-          <td><code>localhost:3000</code></td>
-          <td class="status-ok">No</td>
-        </tr>
-        <tr>
-          <td>🔑 Iniciar sesión</td>
-          <td><code>login.html</code></td>
-          <td><code>localhost:3000/login.html</code></td>
-          <td class="status-ok">No</td>
-        </tr>
-        <tr>
-          <td>📝 Registro</td>
-          <td><code>register.html</code></td>
-          <td><code>localhost:3000/register.html</code></td>
-          <td class="status-ok">No</td>
-        </tr>
-        <tr>
-          <td>👤 Mi cuenta</td>
-          <td><code>Account.js</code></td>
-          <td><code>localhost:3000/account</code></td>
-          <td class="status-bad">Sí</td>
-        </tr>
-        <tr>
-          <td>🤝 Afiliados</td>
-          <td><code>afiliados.html</code></td>
-          <td><code>localhost:3000/afiliados.html</code></td>
-          <td class="status-ok">No</td>
-        </tr>
-        <tr>
-          <td>📞 Contacto</td>
-          <td><code>contacto.html</code></td>
-          <td><code>localhost:3000/contacto.html</code></td>
-          <td class="status-ok">No</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+    <!-- SOLUCIÓN DE PROBLEMAS -->
+    <div class="section-label">Solución de problemas</div>
+    <div class="steps">
 
-  <!-- SOLUCIÓN DE PROBLEMAS -->
-  <div class="section-label">Solución de problemas</div>
-  <div class="steps">
-
-    <div class="step">
-      <div class="step-num">❌</div>
-      <div class="step-body">
-        <h3>La terminal dice "npx no se reconoce"</h3>
-        <p>Node.js no está instalado o no se reinició la computadora después de instalarlo. Instala Node.js desde <code>https://nodejs.org</code> y reinicia.</p>
+      <div class="step">
+        <div class="step-num">❌</div>
+        <div class="step-body">
+          <h3>La terminal dice "npx no se reconoce"</h3>
+          <p>Node.js no está instalado o no se reinició la computadora después de instalarlo. Instala Node.js desde
+            <code>https://nodejs.org</code> y reinicia.</p>
+        </div>
       </div>
-    </div>
 
-    <div class="step">
-      <div class="step-num">❌</div>
-      <div class="step-body">
-        <h3>La página aparece en blanco</h3>
-        <p>Asegúrate de abrir la URL del servidor (<code>localhost:3000</code>) y no el archivo directamente desde el explorador. El <code>file://</code> no funciona correctamente con este proyecto.</p>
+      <div class="step">
+        <div class="step-num">❌</div>
+        <div class="step-body">
+          <h3>La página aparece en blanco</h3>
+          <p>Asegúrate de abrir la URL del servidor (<code>localhost:3000</code>) y no el archivo directamente desde el
+            explorador. El <code>file://</code> no funciona correctamente con este proyecto.</p>
+        </div>
       </div>
-    </div>
 
-    <div class="step">
-      <div class="step-num">❌</div>
-      <div class="step-body">
-        <h3>El puerto 3000 ya está en uso</h3>
-        <p>El servidor usará el siguiente puerto disponible (por ejemplo, <code>3001</code>). Revisa el mensaje en la terminal y usa esa URL.</p>
+      <div class="step">
+        <div class="step-num">❌</div>
+        <div class="step-body">
+          <h3>El puerto 3000 ya está en uso</h3>
+          <p>El servidor usará el siguiente puerto disponible (por ejemplo, <code>3001</code>). Revisa el mensaje en la
+            terminal y usa esa URL.</p>
+        </div>
       </div>
+
     </div>
 
-  </div>
+  </main>
 
-</main>
-
-<footer>
-  <p>Century 21 Platform &nbsp;·&nbsp; Guía de uso local &nbsp;·&nbsp; Versión <span>1.0</span></p>
-</footer>
+  <footer>
+    <p>Century 21 Platform &nbsp;·&nbsp; Guía de uso local &nbsp;·&nbsp; Versión <span>1.0</span></p>
+  </footer>
 
 </body>
+
 </html>

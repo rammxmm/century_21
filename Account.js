@@ -13,10 +13,10 @@ window.Account = (() => {
 
     async function setSession(user) {
         if (!user) return;
-        if (!user.favoritos)          user.favoritos          = [];
-        if (!user.propiedades)        user.propiedades        = [];
-        if (!user.clientes)           user.clientes           = [];
-        if (!user.historial)          user.historial          = [];
+        if (!user.favoritos) user.favoritos = [];
+        if (!user.propiedades) user.propiedades = [];
+        if (!user.clientes) user.clientes = [];
+        if (!user.historial) user.historial = [];
         if (!user.busquedasGuardadas) user.busquedasGuardadas = [];
 
         currentUserData = user;
@@ -162,22 +162,22 @@ window.Account = (() => {
         if (!statsEl) return;
 
         const sess = getSession();
-        const favLength    = (sess.favoritos          || []).length;
-        const propLength   = (sess.propiedades        || []).length;
-        const clientLength = (sess.clientes           || []).length;
-        const savedLength  = (sess.busquedasGuardadas || []).length;
-        const visitasLength = (sess.visitas           || []).length;
-        const historialLength = (sess.historial       || []).length;
+        const favLength = (sess.favoritos || []).length;
+        const propLength = (sess.propiedades || []).length;
+        const clientLength = (sess.clientes || []).length;
+        const savedLength = (sess.busquedasGuardadas || []).length;
+        const visitasLength = (sess.visitas || []).length;
+        const historialLength = (sess.historial || []).length;
 
         // Calcular valor total del portafolio del inversionista desde favoritos
-        const allProps  = window.allProperties || [];
-        const favProps  = (sess.favoritos || []).map(id => allProps.find(p => String(p.id) === String(id))).filter(Boolean);
-        const totalVal  = favProps.reduce((sum, p) => sum + (parseFloat((p.price || '').replace(/[^0-9.]/g,'')) || 0), 0);
+        const allProps = window.allProperties || [];
+        const favProps = (sess.favoritos || []).map(id => allProps.find(p => String(p.id) === String(id))).filter(Boolean);
+        const totalVal = favProps.reduce((sum, p) => sum + (parseFloat((p.price || '').replace(/[^0-9.]/g, '')) || 0), 0);
         const totalValStr = totalVal > 0 ? '$' + Math.round(totalVal / 1e6 * 10) / 10 + 'M' : '$0';
 
         // Propiedades publicadas globalmente por este vendedor
-        const globalProps  = window.globalPublishedProps || [];
-        const myPublished  = auth.currentUser ? globalProps.filter(p => p.vendedorId === auth.currentUser.uid) : [];
+        const globalProps = window.globalPublishedProps || [];
+        const myPublished = auth.currentUser ? globalProps.filter(p => p.vendedorId === auth.currentUser.uid) : [];
         const publishedCnt = myPublished.length || propLength;
 
         const stats = {
@@ -193,7 +193,7 @@ window.Account = (() => {
                 <div class="stat-item"><span class="stat-num">${globalProps.length}</span><span class="stat-label">Propiedades en mercado</span></div>
             `,
             agente: `
-                <div class="stat-item"><span class="stat-num">${(window.globalPublishedProps||[]).length}</span><span class="stat-label">Listings disponibles</span></div>
+                <div class="stat-item"><span class="stat-num">${(window.globalPublishedProps || []).length}</span><span class="stat-label">Listings disponibles</span></div>
                 <div class="stat-item"><span class="stat-num">${clientLength}</span><span class="stat-label">Clientes activos</span></div>
                 <div class="stat-item"><span class="stat-num">${visitasLength}</span><span class="stat-label">Visitas coordinadas</span></div>
             `,
@@ -252,8 +252,8 @@ window.Account = (() => {
 
     function renderPanelComprador() {
         const user = getSession();
-        const favs     = user.favoritos || [];
-        const visitas  = user.visitas   || [];
+        const favs = user.favoritos || [];
+        const visitas = user.visitas || [];
         const guardadas = user.busquedasGuardadas || [];
         const allProps = window.allProperties || [];
 
@@ -266,19 +266,19 @@ window.Account = (() => {
         let visitasHtml = `<div class="favorito-empty"><span>🗓</span><p>Aún no tienes visitas agendadas.</p></div>`;
         if (visitas.length > 0 && allProps.length > 0) {
             visitasHtml = visitas.map((v, idx) => {
-                const prop  = allProps.find(p => p.id === parseInt(v.propertyId));
+                const prop = allProps.find(p => p.id === parseInt(v.propertyId));
                 const title = prop ? prop.title : `Propiedad #${v.propertyId}`;
-                const img   = prop ? prop.image : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=200&q=80';
+                const img = prop ? prop.image : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=200&q=80';
                 return `
                     <div class="visita-card">
                         <img src="${img}" style="width:80px;height:80px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="window.openDetailsModal(${v.propertyId})">
                         <div style="flex:1">
                             <h4 style="margin:0 0 0.3rem 0;cursor:pointer;" onclick="window.openDetailsModal(${v.propertyId})">${title}</h4>
                             <p style="margin:0;color:#aaa;font-size:0.9rem">📅 ${v.date} ⏰ ${v.time}</p>
-                            <span class="visita-status" style="background:${v.status==='Cancelada'?'#550000':'#B79860'};color:${v.status==='Cancelada'?'#fff':'#000'}">${v.status||'Confirmada'}</span>
+                            <span class="visita-status" style="background:${v.status === 'Cancelada' ? '#550000' : '#B79860'};color:${v.status === 'Cancelada' ? '#fff' : '#000'}">${v.status || 'Confirmada'}</span>
                         </div>
                         <div style="display:flex;flex-direction:column;gap:0.5rem;">
-                            ${v.status!=='Cancelada'?`<button class="btn-mp" onclick="window.Account.cancelVisit(${idx})" style="background:#550000;color:white;border:none">Cancelar</button>`:''}
+                            ${v.status !== 'Cancelada' ? `<button class="btn-mp" onclick="window.Account.cancelVisit(${idx})" style="background:#550000;color:white;border:none">Cancelar</button>` : ''}
                         </div>
                     </div>
                 `;
@@ -291,7 +291,7 @@ window.Account = (() => {
                 <div class="saved-search-item">
                     <span class="saved-query">🔍 &ldquo;${q}&rdquo;</span>
                     <div style="display:flex;gap:0.5rem;">
-                        <button class="btn-mp" onclick="document.getElementById('semantic-search').value='${q.replace(/'/g,"\\'")}';
+                        <button class="btn-mp" onclick="document.getElementById('semantic-search').value='${q.replace(/'/g, "\\'")}';
                             document.getElementById('ai-modal').classList.remove('hidden');
                             document.getElementById('btn-search-ai').click();">
                             Buscar
@@ -472,8 +472,8 @@ window.Account = (() => {
     function openProfile() {
         const user = getSession();
         if (!user) return;
-        document.getElementById('profile-name').value  = user.nombre  || '';
-        document.getElementById('profile-email').value = user.correo  || '';
+        document.getElementById('profile-name').value = user.nombre || '';
+        document.getElementById('profile-email').value = user.correo || '';
         document.getElementById('profile-phone').value = user.telefono || '';
 
         // Poblar header del modal rediseñado
@@ -515,10 +515,10 @@ window.Account = (() => {
                 correo: email,
                 tipo: tipo,
                 avatar: nombre.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(),
-                favoritos:          [],
-                propiedades:        [],
-                clientes:           [],
-                historial:          [],
+                favoritos: [],
+                propiedades: [],
+                clientes: [],
+                historial: [],
                 busquedasGuardadas: []
             };
             await setDoc(doc(db, "usuarios", user.uid), userData);
@@ -526,10 +526,10 @@ window.Account = (() => {
         } catch (error) {
             window.isLoggingIn = false;
             const FIREBASE_ERRORS = {
-                'auth/email-already-in-use'  : 'Este correo ya está asociado a una cuenta. ¿Quieres iniciar sesión?',
-                'auth/invalid-email'         : 'El formato del correo no es válido.',
-                'auth/weak-password'         : 'La contraseña debe tener al menos 6 caracteres.',
-                'auth/operation-not-allowed' : 'El registro con correo está deshabilitado temporalmente.',
+                'auth/email-already-in-use': 'Este correo ya está asociado a una cuenta. ¿Quieres iniciar sesión?',
+                'auth/invalid-email': 'El formato del correo no es válido.',
+                'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres.',
+                'auth/operation-not-allowed': 'El registro con correo está deshabilitado temporalmente.',
                 'auth/network-request-failed': 'Sin conexión. Verifica tu internet e inténtalo de nuevo.',
             };
             const msg = FIREBASE_ERRORS[error.code] || 'Ocurrió un error inesperado. Inténtalo más tarde.';
@@ -557,10 +557,10 @@ window.Account = (() => {
                     correo: user.email,
                     tipo: defaultTipo,
                     avatar: (user.displayName || 'U').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(),
-                    favoritos:          [],
-                    propiedades:        [],
-                    clientes:           [],
-                    historial:          [],
+                    favoritos: [],
+                    propiedades: [],
+                    clientes: [],
+                    historial: [],
                     busquedasGuardadas: []
                 };
                 await setDoc(docRef, userData);
@@ -600,7 +600,7 @@ window.Account = (() => {
                 user.telefono = document.getElementById('profile-phone').value;
                 user.avatar = user.nombre.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
                 user.lastProfileUpdate = now;
-                
+
                 setSession(user);
                 applySession();
                 document.getElementById('profile-modal').classList.add('hidden');
@@ -767,7 +767,7 @@ window.Account = (() => {
     async function postularInversionista() {
         const user = getSession();
         if (user) {
-            if(confirm('¿Deseas postularte y cambiar tu cuenta a Inversionista? Tendrás acceso a herramientas de análisis de mercado y ROI.')) {
+            if (confirm('¿Deseas postularte y cambiar tu cuenta a Inversionista? Tendrás acceso a herramientas de análisis de mercado y ROI.')) {
                 user.tipo = 'inversionista';
                 await setSession(user);
                 applySession();

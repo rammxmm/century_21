@@ -1,17 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Términos de Servicio - CENTURY 21</title>
-    <meta name="description" content="Términos y condiciones de uso de la plataforma CENTURY 21. Conoce tus derechos y obligaciones como usuario.">
+    <meta name="description"
+        content="Términos y condiciones de uso de la plataforma CENTURY 21. Conoce tus derechos y obligaciones como usuario.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <style>
-        :root { --gold: #B79860; --dark: #0A0A0A; }
-        body { background: #fafafa; font-family: 'Inter', sans-serif; margin: 0; }
+        :root {
+            --gold: #B79860;
+            --dark: #0A0A0A;
+        }
+
+        body {
+            background: #fafafa;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+        }
 
         .legal-nav {
             background: var(--dark);
@@ -22,34 +32,116 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
-        .legal-nav-logo { color: #fff; font-weight: 800; font-size: 1.1rem; letter-spacing: 1px; text-decoration: none; }
+
+        .legal-nav-logo {
+            color: #fff;
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
         .legal-nav-back {
-            color: var(--gold); font-size: 0.78rem; font-weight: 600;
-            letter-spacing: 1px; text-decoration: none;
-            border-bottom: 1px solid var(--gold); padding-bottom: 2px; transition: opacity 0.2s;
+            color: var(--gold);
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-decoration: none;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 2px;
+            transition: opacity 0.2s;
         }
-        .legal-nav-back:hover { opacity: 0.7; }
+
+        .legal-nav-back:hover {
+            opacity: 0.7;
+        }
 
         .legal-hero {
             background: linear-gradient(135deg, var(--dark) 0%, #1a1a1a 100%);
             padding: 5rem 5% 4rem;
             text-align: center;
         }
-        .legal-hero-label { font-size: 0.65rem; letter-spacing: 3px; font-weight: 700; color: var(--gold); margin-bottom: 1rem; }
-        .legal-hero h1 { font-size: 2.8rem; color: #fff; font-weight: 700; margin-bottom: 1rem; }
-        .legal-hero p { color: #777; font-size: 0.9rem; letter-spacing: 0.5px; }
-        .legal-divider { width: 40px; height: 2px; background: var(--gold); margin: 1.5rem auto 0; }
 
-        .legal-body { max-width: 800px; margin: 0 auto; padding: 4rem 5%; }
-        .legal-section { margin-bottom: 3rem; }
-        .legal-section h2 { font-size: 0.75rem; letter-spacing: 2px; font-weight: 700; color: var(--gold); margin-bottom: 1rem; text-transform: uppercase; }
-        .legal-section h3 { font-size: 1.15rem; font-weight: 600; color: #111; margin-bottom: 0.8rem; }
-        .legal-section p { color: #555; line-height: 1.8; font-size: 0.93rem; margin-bottom: 1rem; }
-        .legal-section ul { color: #555; line-height: 1.8; font-size: 0.93rem; padding-left: 1.5rem; margin-bottom: 1rem; }
-        .legal-section li { margin-bottom: 0.4rem; }
-        .legal-sep { border: none; border-top: 1px solid #e8e8e8; margin: 3rem 0; }
+        .legal-hero-label {
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .legal-hero h1 {
+            font-size: 2.8rem;
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .legal-hero p {
+            color: #777;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+
+        .legal-divider {
+            width: 40px;
+            height: 2px;
+            background: var(--gold);
+            margin: 1.5rem auto 0;
+        }
+
+        .legal-body {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 5%;
+        }
+
+        .legal-section {
+            margin-bottom: 3rem;
+        }
+
+        .legal-section h2 {
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .legal-section h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #111;
+            margin-bottom: 0.8rem;
+        }
+
+        .legal-section p {
+            color: #555;
+            line-height: 1.8;
+            font-size: 0.93rem;
+            margin-bottom: 1rem;
+        }
+
+        .legal-section ul {
+            color: #555;
+            line-height: 1.8;
+            font-size: 0.93rem;
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .legal-section li {
+            margin-bottom: 0.4rem;
+        }
+
+        .legal-sep {
+            border: none;
+            border-top: 1px solid #e8e8e8;
+            margin: 3rem 0;
+        }
 
         .highlight-box {
             background: linear-gradient(135deg, #fffbea, #fffdf5);
@@ -70,9 +162,15 @@
             font-size: 0.75rem;
             letter-spacing: 0.5px;
         }
-        .legal-footer a { color: var(--gold); text-decoration: none; margin: 0 0.8rem; }
+
+        .legal-footer a {
+            color: var(--gold);
+            text-decoration: none;
+            margin: 0 0.8rem;
+        }
     </style>
 </head>
+
 <body>
 
     <nav class="legal-nav">
@@ -93,9 +191,12 @@
             <h2>01 — Aceptación</h2>
             <h3>Acuerdo entre el usuario y CENTURY 21</h3>
             <div class="highlight-box">
-                Al registrarte o utilizar la plataforma CENTURY 21, aceptas estos Términos de Servicio en su totalidad. Si no estás de acuerdo con alguna de las condiciones aquí establecidas, te pedimos que no utilices nuestros servicios.
+                Al registrarte o utilizar la plataforma CENTURY 21, aceptas estos Términos de Servicio en su totalidad.
+                Si no estás de acuerdo con alguna de las condiciones aquí establecidas, te pedimos que no utilices
+                nuestros servicios.
             </div>
-            <p>Estos términos constituyen un acuerdo legal vinculante entre tú (el usuario) y CENTURY 21, operadora de la plataforma inmobiliaria digital accesible a través de este sitio web.</p>
+            <p>Estos términos constituyen un acuerdo legal vinculante entre tú (el usuario) y CENTURY 21, operadora de
+                la plataforma inmobiliaria digital accesible a través de este sitio web.</p>
         </div>
 
         <hr class="legal-sep">
@@ -112,7 +213,8 @@
                 <li>Conectar con agentes inmobiliarios certificados</li>
                 <li>Acceder a análisis de mercado e indicadores de inversión</li>
             </ul>
-            <p>CENTURY 21 actúa como intermediario tecnológico y <strong>no garantiza</strong> la disponibilidad, precio o condiciones de ninguna propiedad publicada por terceros.</p>
+            <p>CENTURY 21 actúa como intermediario tecnológico y <strong>no garantiza</strong> la disponibilidad, precio
+                o condiciones de ninguna propiedad publicada por terceros.</p>
         </div>
 
         <hr class="legal-sep">
@@ -128,7 +230,9 @@
                 <li>No ceder o transferir tu cuenta a terceros</li>
             </ul>
             <h3>Tipos de cuenta</h3>
-            <p>Existen cuatro tipos de cuenta: <strong>Comprador, Vendedor, Agente Inmobiliario e Inversionista</strong>. Cada tipo tiene funcionalidades y responsabilidades específicas. El uso indebido del tipo de cuenta puede resultar en la suspensión del servicio.</p>
+            <p>Existen cuatro tipos de cuenta: <strong>Comprador, Vendedor, Agente Inmobiliario e
+                    Inversionista</strong>. Cada tipo tiene funcionalidades y responsabilidades específicas. El uso
+                indebido del tipo de cuenta puede resultar en la suspensión del servicio.</p>
         </div>
 
         <hr class="legal-sep">
@@ -143,7 +247,8 @@
                 <li>El cumplimiento de las leyes fiscales y notariales aplicables</li>
                 <li>Actualizar o retirar publicaciones cuando la propiedad ya no esté disponible</li>
             </ul>
-            <p>CENTURY 21 se reserva el derecho de retirar cualquier publicación que infrinja estos términos, sin previo aviso.</p>
+            <p>CENTURY 21 se reserva el derecho de retirar cualquier publicación que infrinja estos términos, sin previo
+                aviso.</p>
         </div>
 
         <hr class="legal-sep">
@@ -165,15 +270,20 @@
         <div class="legal-section">
             <h2>06 — Limitación de responsabilidad</h2>
             <h3>Alcance de nuestra responsabilidad</h3>
-            <p>CENTURY 21 no será responsable por daños directos, indirectos, incidentales o consecuentes derivados del uso o imposibilidad de uso de la plataforma, incluyendo pérdidas económicas relacionadas con transacciones inmobiliarias realizadas entre usuarios.</p>
-            <p>La plataforma se ofrece "tal cual", sin garantías de disponibilidad ininterrumpida ni de resultados específicos en búsquedas o recomendaciones.</p>
+            <p>CENTURY 21 no será responsable por daños directos, indirectos, incidentales o consecuentes derivados del
+                uso o imposibilidad de uso de la plataforma, incluyendo pérdidas económicas relacionadas con
+                transacciones inmobiliarias realizadas entre usuarios.</p>
+            <p>La plataforma se ofrece "tal cual", sin garantías de disponibilidad ininterrumpida ni de resultados
+                específicos en búsquedas o recomendaciones.</p>
         </div>
 
         <hr class="legal-sep">
 
         <div class="legal-section">
             <h2>07 — Modificaciones y terminación</h2>
-            <p>Nos reservamos el derecho de modificar estos términos en cualquier momento. Las modificaciones entran en vigor al ser publicadas en la plataforma. Podemos suspender o cancelar cuentas que incumplan estos términos, sin obligación de reembolso por servicios no utilizados.</p>
+            <p>Nos reservamos el derecho de modificar estos términos en cualquier momento. Las modificaciones entran en
+                vigor al ser publicadas en la plataforma. Podemos suspender o cancelar cuentas que incumplan estos
+                términos, sin obligación de reembolso por servicios no utilizados.</p>
             <p>Estos términos se rigen por las leyes de los Estados Unidos Mexicanos.</p>
         </div>
 
@@ -190,4 +300,5 @@
     </footer>
 
 </body>
+
 </html>

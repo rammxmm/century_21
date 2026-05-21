@@ -32,7 +32,9 @@
     pointer-events: none;
 }
 
-.profile-modal-card, .publish-modal-card, .visit-modal-card {
+.profile-modal-card,
+.publish-modal-card,
+.visit-modal-card {
     background: var(--white);
     border-radius: 16px;
     width: 90%;
@@ -44,12 +46,13 @@
     transition: transform 0.3s ease;
 }
 
-.modal-overlay.hidden .profile-modal-card, 
+.modal-overlay.hidden .profile-modal-card,
 .modal-overlay.hidden .publish-modal-card {
     transform: translateY(20px);
 }
 
-.profile-close-btn, .publish-close-btn {
+.profile-close-btn,
+.publish-close-btn {
     position: absolute;
     top: 15px;
     right: 20px;
@@ -68,7 +71,8 @@
     transition: background 0.3s, color 0.3s;
 }
 
-.profile-close-btn:hover, .publish-close-btn:hover {
+.profile-close-btn:hover,
+.publish-close-btn:hover {
     background: var(--white);
     color: var(--dark-gray);
 }
@@ -76,7 +80,8 @@
 /* ----------------------------------------------------
    HEADER DEL MODAL
    ---------------------------------------------------- */
-.profile-card-header, .publish-card-header {
+.profile-card-header,
+.publish-card-header {
     background: linear-gradient(135deg, var(--dark-gray) 0%, #000 100%);
     padding: 3rem 2rem 2rem;
     display: flex;
@@ -115,17 +120,20 @@
 /* ----------------------------------------------------
    BODY DEL MODAL Y FORMULARIOS
    ---------------------------------------------------- */
-.profile-card-body, .publish-card-body {
+.profile-card-body,
+.publish-card-body {
     padding: 2.5rem;
 }
 
-.profile-card-title h2, .publish-card-title h2 {
+.profile-card-title h2,
+.publish-card-title h2 {
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 0.2rem;
 }
 
-.profile-card-title p, .publish-card-title p {
+.profile-card-title p,
+.publish-card-title p {
     color: #666;
     font-size: 0.85rem;
     margin-bottom: 2rem;
@@ -144,7 +152,9 @@
     margin-bottom: 0.5rem;
 }
 
-.pf-field input, .pf-field select, .pf-field textarea {
+.pf-field input,
+.pf-field select,
+.pf-field textarea {
     width: 100%;
     padding: 0.8rem 0;
     border: none;
@@ -156,7 +166,9 @@
     transition: border-color 0.3s;
 }
 
-.pf-field input:focus, .pf-field select:focus, .pf-field textarea:focus {
+.pf-field input:focus,
+.pf-field select:focus,
+.pf-field textarea:focus {
     border-bottom-color: var(--gold);
 }
 
@@ -165,7 +177,8 @@
     cursor: not-allowed;
 }
 
-.pf-submit, .pub-submit {
+.pf-submit,
+.pub-submit {
     width: 100%;
     padding: 1rem;
     font-size: 0.9rem;
@@ -213,7 +226,9 @@
 }
 
 /* GRID DE PROPIEDADES (Vendedor) */
-.mis-propiedades-grid, .clientes-grid, .mercado-grid {
+.mis-propiedades-grid,
+.clientes-grid,
+.mercado-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
@@ -225,14 +240,14 @@
     border-radius: 12px;
     padding: 1.5rem;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
     display: flex;
     flex-direction: column;
 }
 
 .mi-propiedad-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
     border-color: var(--gold);
 }
 
@@ -255,8 +270,16 @@
     border-radius: 12px;
     font-weight: 600;
 }
-.status-activo { background: rgba(39, 174, 96, 0.1); color: #27ae60; }
-.status-rentado { background: rgba(52, 152, 219, 0.1); color: #3498db; }
+
+.status-activo {
+    background: rgba(39, 174, 96, 0.1);
+    color: #27ae60;
+}
+
+.status-rentado {
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+}
 
 .mp-precio {
     font-size: 1.3rem;
@@ -315,11 +338,13 @@
     box-shadow: none;
     color: #888;
 }
+
 .mp-nueva:hover {
     border-color: var(--gold);
     color: var(--gold);
     background: rgba(183, 152, 96, 0.05);
 }
+
 .mp-nueva span {
     font-size: 3rem;
     font-weight: 300;
@@ -327,12 +352,13 @@
 }
 
 /* TARJETAS DE AGENTE Y MERCADO */
-.cliente-card, .mercado-card {
+.cliente-card,
+.mercado-card {
     background: var(--white);
     border: 1px solid #eee;
     border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
 }
 
 .mercado-zona {
@@ -351,10 +377,21 @@
     font-size: 0.9rem;
 }
 
-.mstat-label { color: #666; }
-.mstat-val { font-weight: 700; }
-.trend-up { color: #27ae60; }
-.trend-down { color: #e74c3c; }
+.mstat-label {
+    color: #666;
+}
+
+.mstat-val {
+    font-weight: 700;
+}
+
+.trend-up {
+    color: #27ae60;
+}
+
+.trend-down {
+    color: #e74c3c;
+}
 
 /* RESTRICCIÓN PERFIL */
 .profile-notice {
