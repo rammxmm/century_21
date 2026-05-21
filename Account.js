@@ -614,55 +614,75 @@ window.Account = (() => {
         document.getElementById('publish-form')?.addEventListener('submit', async (e) => {
             e.preventDefault();
             const user = getSession();
-            if (user) {
+            if (!user) { alert('Debes iniciar sesión para publicar.'); return; }
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Publicando...';
+            submitBtn.disabled = true;
+
+            try {
+                const rawPrice = document.getElementById('pub-price').value;
+                const numericPrice = parseFloat(rawPrice.replace(/[^0-9.]/g, ''));
+                const formattedPrice = isNaN(numericPrice)
+                    ? rawPrice
+                    : '$' + numericPrice.toLocaleString('es-MX');
+
                 const nuevaPropiedad = {
                     id: Date.now(),
                     titulo: document.getElementById('pub-title').value,
-                    precio: document.getElementById('pub-price').value,
+                    title: document.getElementById('pub-title').value,
+                    precio: formattedPrice,
+                    price: formattedPrice,
                     ubicacion: document.getElementById('pub-location').value,
+                    location: document.getElementById('pub-location').value,
                     status: document.getElementById('pub-status').value,
                     type: document.getElementById('pub-type').value,
                     bedrooms: parseInt(document.getElementById('pub-beds').value) || 0,
                     bathrooms: parseFloat(document.getElementById('pub-baths').value) || 0,
                     area: parseInt(document.getElementById('pub-area').value) || 0,
-                    image: '', // Se llenará tras subir
+                    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80',
                     vendedorId: auth.currentUser ? auth.currentUser.uid : 'anon',
-                    description: 'Propiedad publicada recientemente por un agente o vendedor.'
+                    description: 'Propiedad publicada recientemente por un agente o vendedor.',
+                    createdAt: new Date().toISOString()
                 };
 
+                // Convertir imagen a base64 localmente (sin depender de Firebase Storage)
                 const fileInput = document.getElementById('pub-image');
-                if (fileInput.files.length > 0) {
+                if (fileInput.files && fileInput.files.length > 0) {
                     const file = fileInput.files[0];
-                    const storageRef = ref(storage, 'propiedades/' + Date.now() + '_' + file.name);
-                    try {
-                        const snapshot = await uploadBytes(storageRef, file);
-                        nuevaPropiedad.image = await getDownloadURL(snapshot.ref);
-                    } catch (err) {
-                        console.error('Error uploading image', err);
-                        alert('No se pudo subir la imagen, usando placeholder.');
-                        nuevaPropiedad.image = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80';
-                    }
-                } else {
-                    nuevaPropiedad.image = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80';
+                    nuevaPropiedad.image = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => resolve(ev.target.result);
+                        reader.onerror = () => resolve('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=80');
+                        reader.readAsDataURL(file);
+                    });
                 }
 
+                if (!user.propiedades) user.propiedades = [];
                 user.propiedades.push(nuevaPropiedad);
                 await setSession(user);
                 applySession();
 
-                // Guardar en la colección global
+                // Guardar en la colección global de Firestore
                 try {
                     await addDoc(collection(db, "global_properties"), nuevaPropiedad);
                 } catch (err) {
-                    console.error("Error saving property globally: ", err);
+                    console.warn("Firestore global save failed:", err.message);
                 }
 
                 // Disparar recarga de propiedades globales en App.js
-                if (window.appLoadProperties) window.appLoadProperties();
+                if (typeof window.appLoadProperties === 'function') window.appLoadProperties();
 
                 document.getElementById('publish-modal').classList.add('hidden');
                 e.target.reset();
                 alert('¡Propiedad publicada con éxito! Ahora es visible para todos los compradores.');
+            } catch (err) {
+                console.error('Error al publicar propiedad:', err);
+                alert('Ocurrió un error al publicar: ' + err.message);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
             }
         });
 
